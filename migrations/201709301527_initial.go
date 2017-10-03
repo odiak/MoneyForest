@@ -1,9 +1,9 @@
 package main
 
 import (
-	"../pgmodels"
 	"fmt"
 	"github.com/go-pg/migrations"
+	"github.com/odiak/MoneyForest/store"
 )
 
 func init() {
@@ -58,9 +58,9 @@ func init() {
 			return err
 		}
 		err = db.Insert(
-			pgmodels.AccountType{"bank"},
-			pgmodels.AccountType{"credit-card"},
-			pgmodels.AccountType{"wallet"},
+			store.AccountType{"bank"},
+			store.AccountType{"credit-card"},
+			store.AccountType{"wallet"},
 		)
 		return err
 	}, func(db migrations.DB) error {

@@ -1,4 +1,4 @@
-package pgmodels
+package store
 
 type Category struct {
 	ID               string `sql:"type:uuid"`

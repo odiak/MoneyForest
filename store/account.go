@@ -1,4 +1,4 @@
-package pgmodels
+package store
 
 type Account struct {
 	ID          string `sql:"type:uuid"`

@@ -1,4 +1,4 @@
-package pgmodels
+package store
 
 type ValidationError string
 
