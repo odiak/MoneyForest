@@ -11,6 +11,8 @@ var _ = API("MoneyForest", func() {
 	Host("localhost:8000")
 	Scheme("http")
 	BasePath("/api")
+	Consumes("application/json")
+	Produces("application/json")
 })
 
 var _ = Resource("user", func() {
