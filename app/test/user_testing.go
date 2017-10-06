@@ -58,10 +58,10 @@ func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa
 		query["password"] = sliceVal
 	}
 	u := &url.URL{
-		Path:     fmt.Sprintf("/api/users"),
+		Path:     fmt.Sprintf("/api/users/login"),
 		RawQuery: query.Encode(),
 	}
-	req, err := http.NewRequest("PUT", u.String(), nil)
+	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
@@ -140,10 +140,10 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 		query["password"] = sliceVal
 	}
 	u := &url.URL{
-		Path:     fmt.Sprintf("/api/users"),
+		Path:     fmt.Sprintf("/api/users/login"),
 		RawQuery: query.Encode(),
 	}
-	req, err := http.NewRequest("PUT", u.String(), nil)
+	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
@@ -226,10 +226,10 @@ func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *g
 		query["password"] = sliceVal
 	}
 	u := &url.URL{
-		Path:     fmt.Sprintf("/api/users"),
+		Path:     fmt.Sprintf("/api/users/login"),
 		RawQuery: query.Encode(),
 	}
-	req, err := http.NewRequest("PUT", u.String(), nil)
+	req, err := http.NewRequest("POST", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}

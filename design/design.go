@@ -33,7 +33,7 @@ var _ = Resource("user", func() {
 
 	Action("login", func() {
 		Routing(
-			PUT(""),
+			POST("/login"),
 		)
 		Params(func() {
 			Param("email", String)

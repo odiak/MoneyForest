@@ -51,8 +51,8 @@ func MountUserController(service *goa.Service, ctrl UserController) {
 		}
 		return ctrl.Login(rctx)
 	}
-	service.Mux.Handle("PUT", "/api/users", ctrl.MuxHandler("login", h, nil))
-	service.LogInfo("mount", "ctrl", "User", "action", "Login", "route", "PUT /api/users")
+	service.Mux.Handle("POST", "/api/users/login", ctrl.MuxHandler("login", h, nil))
+	service.LogInfo("mount", "ctrl", "User", "action", "Login", "route", "POST /api/users/login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
