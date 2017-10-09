@@ -13,7 +13,7 @@ func init() {
 			CREATE EXTENSION "pgcrypto";
 
 			CREATE TABLE users (
-				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
 				email text NOT NULL UNIQUE,
 				name text NOT NULL,
 				encrypted_password text NOT NULL
@@ -24,32 +24,37 @@ func init() {
 			);
 
 			CREATE TABLE accounts (
-				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-				owner_id uuid NOT NULL REFERENCES users (id),
+				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+				owner_id text NOT NULL REFERENCES users (id),
 				name text NOT NULL,
 				description text NOT NULL,
 				account_type text NOT NULL REFERENCES account_types (id)
 					ON UPDATE CASCADE,
 				balance integer NOT NULL,
-				auth_info jsonb
+				has_balance boolean
 			);
 
 			CREATE TABLE categories (
-				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+				owner_id text NOT NULL REFERENCES users (id),
 				name text NOT NULL,
-				parent_category_id uuid REFERENCES categories (id)
+				parent_category_id text REFERENCES categories (id)
+			);
+
+			CREATE TABLE transaction_types (
+				id text PRIMARY KEY
 			);
 
 			CREATE TABLE transactions (
-				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-				account_id uuid NOT NULL REFERENCES accounts (id),
+				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+				account_id text NOT NULL REFERENCES accounts (id),
 				amount integer,
 				title text NOT NULL,
 				original_title text NOT NULL,
 				description text NOT NULL,
-				category_id uuid REFERENCES categories (id),
+				category_id text REFERENCES categories (id),
 				date date NOT NULL,
-				is_transfer boolean,
+				transaction_type text NOT NULL REFERENCES transaction_types (id),
 				created_at timestamptz,
 				updated_at timestamptz
 			);
@@ -62,7 +67,19 @@ func init() {
 			store.AccountType{"credit-card"},
 			store.AccountType{"wallet"},
 		)
-		return err
+		if err != nil {
+			return err
+		}
+		err = db.Insert(
+			store.TransactionType{"expense"},
+			store.TransactionType{"income"},
+			store.TransactionType{"transfer"},
+			store.TransactionType{"balance-adjustment"},
+		)
+		if err != nil {
+			return err
+		}
+		return nil
 	}, func(db migrations.DB) error {
 		fmt.Println("dropping initial tables")
 		_, err := db.Exec(`
