@@ -3,6 +3,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/go-pg/pg"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
@@ -23,6 +26,13 @@ func main() {
 		User:     "kaido",
 		Addr:     "127.0.0.1:5432",
 		Database: "money_forest",
+	})
+	db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
+		query, err := event.FormattedQuery()
+		if err != nil {
+			panic(err)
+		}
+		service.LogInfo(fmt.Sprintf("SQL Query: %s, %s", time.Since(event.StartTime), query))
 	})
 
 	// Mount "user" controller
