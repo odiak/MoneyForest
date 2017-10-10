@@ -1,8 +1,8 @@
 package store
 
 type Account struct {
-	ID          string
-	OwnerID     string
+	ID          string `sql:"type:uuid"`
+	OwnerID     string `sql:"type:uuid"`
 	Owner       *User
 	Name        string
 	Description string

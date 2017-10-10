@@ -5,14 +5,14 @@ import (
 )
 
 type Transaction struct {
-	ID              string
-	AccountID       string
+	ID              string `sql:"type:uuid"`
+	AccountID       string `sql:"type:uuid"`
 	Account         *Account
 	Amount          int32
 	Title           string
 	OriginalTitle   string
 	Description     string
-	CategoryID      string
+	CategoryID      string `sql:"type:uuid"`
 	Category        *Category
 	Date            time.Time
 	TransactionType string

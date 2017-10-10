@@ -13,7 +13,7 @@ func init() {
 			CREATE EXTENSION "pgcrypto";
 
 			CREATE TABLE users (
-				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
+				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
 				email text NOT NULL UNIQUE,
 				name text NOT NULL,
 				encrypted_password text NOT NULL
@@ -24,8 +24,8 @@ func init() {
 			);
 
 			CREATE TABLE accounts (
-				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-				owner_id text NOT NULL REFERENCES users (id),
+				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+				owner_id uuid NOT NULL REFERENCES users (id),
 				name text NOT NULL,
 				description text NOT NULL,
 				account_type text NOT NULL REFERENCES account_types (id)
@@ -35,10 +35,10 @@ func init() {
 			);
 
 			CREATE TABLE categories (
-				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-				owner_id text NOT NULL REFERENCES users (id),
+				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+				owner_id uuid NOT NULL REFERENCES users (id),
 				name text NOT NULL,
-				parent_category_id text REFERENCES categories (id)
+				parent_category_id uuid REFERENCES categories (id)
 			);
 
 			CREATE TABLE transaction_types (
@@ -46,13 +46,13 @@ func init() {
 			);
 
 			CREATE TABLE transactions (
-				id text PRIMARY KEY DEFAULT encode(gen_random_bytes(16), 'hex'),
-				account_id text NOT NULL REFERENCES accounts (id),
+				id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+				account_id uuid NOT NULL REFERENCES accounts (id),
 				amount integer,
 				title text NOT NULL,
 				original_title text NOT NULL,
 				description text NOT NULL,
-				category_id text REFERENCES categories (id),
+				category_id uuid REFERENCES categories (id),
 				date date NOT NULL,
 				transaction_type text NOT NULL REFERENCES transaction_types (id),
 				created_at timestamptz,
