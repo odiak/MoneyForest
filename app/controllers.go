@@ -167,6 +167,127 @@ func unmarshalUpdateAccountPayload(ctx context.Context, service *goa.Service, re
 	return nil
 }
 
+// CategoryController is the controller interface for the Category actions.
+type CategoryController interface {
+	goa.Muxer
+	Create(*CreateCategoryContext) error
+	Delete(*DeleteCategoryContext) error
+	List(*ListCategoryContext) error
+	Update(*UpdateCategoryContext) error
+}
+
+// MountCategoryController "mounts" a Category resource controller on the given service.
+func MountCategoryController(service *goa.Service, ctrl CategoryController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateCategoryContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*Category)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("POST", "/api/categories", ctrl.MuxHandler("create", h, unmarshalCreateCategoryPayload))
+	service.LogInfo("mount", "ctrl", "Category", "action", "Create", "route", "POST /api/categories", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteCategoryContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("DELETE", "/api/categories/:categoryID", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Category", "action", "Delete", "route", "DELETE /api/categories/:categoryID", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListCategoryContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("GET", "/api/categories", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "Category", "action", "List", "route", "GET /api/categories", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewUpdateCategoryContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*Category)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Update(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("PUT", "/api/categories/:categoryID", ctrl.MuxHandler("update", h, unmarshalUpdateCategoryPayload))
+	service.LogInfo("mount", "ctrl", "Category", "action", "Update", "route", "PUT /api/categories/:categoryID", "security", "APIKeyAuth")
+}
+
+// unmarshalCreateCategoryPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateCategoryPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &category{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// unmarshalUpdateCategoryPayload unmarshals the request body into the context request data Payload field.
+func unmarshalUpdateCategoryPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &category{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
 // UserController is the controller interface for the User actions.
 type UserController interface {
 	goa.Muxer

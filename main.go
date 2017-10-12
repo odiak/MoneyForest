@@ -43,6 +43,7 @@ func main() {
 	app.UseAPIKeyAuthMiddleware(service, NewAPIKeyMiddleware(db))
 	app.MountUserController(service, controllers.NewUserController(service, db))
 	app.MountAccountController(service, controllers.NewAccountController(service, db))
+	app.MountCategoryController(service, controllers.NewCategoryController(service, db))
 
 	// Start service
 	if err := service.ListenAndServe(":8000"); err != nil {

@@ -121,3 +121,19 @@ var CategoryMedia = MediaType("application/vnd.moneyforest.category+json", func(
 		Attribute("parentCategory")
 	})
 })
+
+var CategoryListMedia = MediaType("application/vnd.moneyforest.category-list+json", func() {
+	TypeName("CategoryListMedia")
+
+	Attributes(func() {
+		Attribute("categories", ArrayOf(CategoryMedia))
+		Attribute("hasNext", Boolean)
+
+		Required("categories", "hasNext")
+	})
+
+	View("default", func() {
+		Attribute("categories")
+		Attribute("hasNext")
+	})
+})

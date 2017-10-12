@@ -115,6 +115,30 @@ func (mt *CategoryMediaFull) Validate() (err error) {
 	return
 }
 
+// CategoryListMedia media type (default view)
+//
+// Identifier: application/vnd.moneyforest.category-list+json; view=default
+type CategoryListMedia struct {
+	Categories []*CategoryMedia `form:"categories" json:"categories" xml:"categories"`
+	HasNext    bool             `form:"hasNext" json:"hasNext" xml:"hasNext"`
+}
+
+// Validate validates the CategoryListMedia media type instance.
+func (mt *CategoryListMedia) Validate() (err error) {
+	if mt.Categories == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "categories"))
+	}
+
+	for _, e := range mt.Categories {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
 // TransactionMedia media type (default view)
 //
 // Identifier: application/vnd.moneyforest.transaction+json; view=default

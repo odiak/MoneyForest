@@ -238,6 +238,197 @@ func (ctx *UpdateAccountContext) NotFound() error {
 	return nil
 }
 
+// CreateCategoryContext provides the category create action context.
+type CreateCategoryContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *Category
+}
+
+// NewCreateCategoryContext parses the incoming request URL and body, performs validations and creates the
+// context used by the category controller create action.
+func NewCreateCategoryContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateCategoryContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := CreateCategoryContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *CreateCategoryContext) OK(r *CategoryMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKFull sends a HTTP response with status code 200.
+func (ctx *CreateCategoryContext) OKFull(r *CategoryMediaFull) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *CreateCategoryContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// DeleteCategoryContext provides the category delete action context.
+type DeleteCategoryContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	CategoryID uuid.UUID
+}
+
+// NewDeleteCategoryContext parses the incoming request URL and body, performs validations and creates the
+// context used by the category controller delete action.
+func NewDeleteCategoryContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteCategoryContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := DeleteCategoryContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramCategoryID := req.Params["categoryID"]
+	if len(paramCategoryID) > 0 {
+		rawCategoryID := paramCategoryID[0]
+		if categoryID, err2 := uuid.FromString(rawCategoryID); err2 == nil {
+			rctx.CategoryID = categoryID
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("categoryID", rawCategoryID, "uuid"))
+		}
+	}
+	return &rctx, err
+}
+
+// NoContent sends a HTTP response with status code 204.
+func (ctx *DeleteCategoryContext) NoContent() error {
+	ctx.ResponseData.WriteHeader(204)
+	return nil
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeleteCategoryContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// ListCategoryContext provides the category list action context.
+type ListCategoryContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Count int
+	Page  int
+}
+
+// NewListCategoryContext parses the incoming request URL and body, performs validations and creates the
+// context used by the category controller list action.
+func NewListCategoryContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListCategoryContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ListCategoryContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramCount := req.Params["count"]
+	if len(paramCount) == 0 {
+		rctx.Count = 40
+	} else {
+		rawCount := paramCount[0]
+		if count, err2 := strconv.Atoi(rawCount); err2 == nil {
+			rctx.Count = count
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("count", rawCount, "integer"))
+		}
+		if rctx.Count < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`count`, rctx.Count, 1, true))
+		}
+		if rctx.Count > 60 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`count`, rctx.Count, 60, false))
+		}
+	}
+	paramPage := req.Params["page"]
+	if len(paramPage) == 0 {
+		rctx.Page = 1
+	} else {
+		rawPage := paramPage[0]
+		if page, err2 := strconv.Atoi(rawPage); err2 == nil {
+			rctx.Page = page
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("page", rawPage, "integer"))
+		}
+		if rctx.Page < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`page`, rctx.Page, 1, true))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ListCategoryContext) OK(r *CategoryListMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category-list+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// UpdateCategoryContext provides the category update action context.
+type UpdateCategoryContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	CategoryID uuid.UUID
+	Payload    *Category
+}
+
+// NewUpdateCategoryContext parses the incoming request URL and body, performs validations and creates the
+// context used by the category controller update action.
+func NewUpdateCategoryContext(ctx context.Context, r *http.Request, service *goa.Service) (*UpdateCategoryContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := UpdateCategoryContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramCategoryID := req.Params["categoryID"]
+	if len(paramCategoryID) > 0 {
+		rawCategoryID := paramCategoryID[0]
+		if categoryID, err2 := uuid.FromString(rawCategoryID); err2 == nil {
+			rctx.CategoryID = categoryID
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("categoryID", rawCategoryID, "uuid"))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *UpdateCategoryContext) OK(r *CategoryMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKFull sends a HTTP response with status code 200.
+func (ctx *UpdateCategoryContext) OKFull(r *CategoryMediaFull) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *UpdateCategoryContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *UpdateCategoryContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // LoginUserContext provides the user login action context.
 type LoginUserContext struct {
 	context.Context

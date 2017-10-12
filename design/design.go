@@ -118,3 +118,59 @@ var _ = Resource("account", func() {
 		Response(NotFound)
 	})
 })
+
+var _ = Resource("category", func() {
+	DefaultMedia(CategoryMedia)
+	BasePath("/categories")
+
+	Action("list", func() {
+		Routing(
+			GET(""),
+		)
+		Params(func() {
+			Param("count", Integer, func() {
+				Minimum(1)
+				Maximum(60)
+				Default(40)
+			})
+			Param("page", Integer, func() {
+				Minimum(1)
+				Default(1)
+			})
+		})
+		Response(OK, CategoryListMedia)
+	})
+
+	Action("create", func() {
+		Routing(
+			POST(""),
+		)
+		Payload(CategoryPayload)
+		Response(OK, CategoryMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("update", func() {
+		Routing(
+			PUT(":categoryID"),
+		)
+		Params(func() {
+			Param("categoryID", UUID)
+		})
+		Payload(CategoryPayload)
+		Response(OK, CategoryMedia)
+		Response(NotFound)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("delete", func() {
+		Routing(
+			DELETE(":categoryID"),
+		)
+		Params(func() {
+			Param("categoryID", UUID)
+		})
+		Response(NoContent)
+		Response(NotFound)
+	})
+})
