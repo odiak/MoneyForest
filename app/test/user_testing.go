@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, email *string, password *string) (http.ResponseWriter, error) {
+func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, email string, password string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -49,12 +49,12 @@ func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa
 	// Setup request context
 	rw := httptest.NewRecorder()
 	query := url.Values{}
-	if email != nil {
-		sliceVal := []string{*email}
+	{
+		sliceVal := []string{email}
 		query["email"] = sliceVal
 	}
-	if password != nil {
-		sliceVal := []string{*password}
+	{
+		sliceVal := []string{password}
 		query["password"] = sliceVal
 	}
 	u := &url.URL{
@@ -66,12 +66,12 @@ func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	if email != nil {
-		sliceVal := []string{*email}
+	{
+		sliceVal := []string{email}
 		prms["email"] = sliceVal
 	}
-	if password != nil {
-		sliceVal := []string{*password}
+	{
+		sliceVal := []string{password}
 		prms["password"] = sliceVal
 	}
 	if ctx == nil {
@@ -110,7 +110,7 @@ func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, email *string, password *string) (http.ResponseWriter, *app.User) {
+func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, email string, password string) (http.ResponseWriter, *app.UserMedia) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -131,12 +131,12 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 	// Setup request context
 	rw := httptest.NewRecorder()
 	query := url.Values{}
-	if email != nil {
-		sliceVal := []string{*email}
+	{
+		sliceVal := []string{email}
 		query["email"] = sliceVal
 	}
-	if password != nil {
-		sliceVal := []string{*password}
+	{
+		sliceVal := []string{password}
 		query["password"] = sliceVal
 	}
 	u := &url.URL{
@@ -148,12 +148,12 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	if email != nil {
-		sliceVal := []string{*email}
+	{
+		sliceVal := []string{email}
 		prms["email"] = sliceVal
 	}
-	if password != nil {
-		sliceVal := []string{*password}
+	{
+		sliceVal := []string{password}
 		prms["password"] = sliceVal
 	}
 	if ctx == nil {
@@ -175,12 +175,12 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
-	var mt *app.User
+	var mt *app.UserMedia
 	if resp != nil {
 		var ok bool
-		mt, ok = resp.(*app.User)
+		mt, ok = resp.(*app.UserMedia)
 		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.User", resp, resp)
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.UserMedia", resp, resp)
 		}
 		_err = mt.Validate()
 		if _err != nil {
@@ -196,7 +196,7 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, email *string, password *string) http.ResponseWriter {
+func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, email string, password string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -217,12 +217,12 @@ func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *g
 	// Setup request context
 	rw := httptest.NewRecorder()
 	query := url.Values{}
-	if email != nil {
-		sliceVal := []string{*email}
+	{
+		sliceVal := []string{email}
 		query["email"] = sliceVal
 	}
-	if password != nil {
-		sliceVal := []string{*password}
+	{
+		sliceVal := []string{password}
 		query["password"] = sliceVal
 	}
 	u := &url.URL{
@@ -234,12 +234,12 @@ func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *g
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	if email != nil {
-		sliceVal := []string{*email}
+	{
+		sliceVal := []string{email}
 		prms["email"] = sliceVal
 	}
-	if password != nil {
-		sliceVal := []string{*password}
+	{
+		sliceVal := []string{password}
 		prms["password"] = sliceVal
 	}
 	if ctx == nil {
@@ -270,7 +270,7 @@ func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *g
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func RegisterUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, payload *app.RegisterUserPayload) (http.ResponseWriter, error) {
+func RegisterUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, payload *app.UserPayload) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -345,7 +345,7 @@ func RegisterUserBadRequest(t goatest.TInterface, ctx context.Context, service *
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func RegisterUserNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, payload *app.RegisterUserPayload) http.ResponseWriter {
+func RegisterUserNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, payload *app.UserPayload) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -413,7 +413,7 @@ func RegisterUserNotFound(t goatest.TInterface, ctx context.Context, service *go
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func RegisterUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, payload *app.RegisterUserPayload) (http.ResponseWriter, *app.User) {
+func RegisterUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.UserController, payload *app.UserPayload) (http.ResponseWriter, *app.UserMedia) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -472,12 +472,12 @@ func RegisterUserOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
-	var mt *app.User
+	var mt *app.UserMedia
 	if resp != nil {
 		var _ok bool
-		mt, _ok = resp.(*app.User)
+		mt, _ok = resp.(*app.UserMedia)
 		if !_ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.User", resp, resp)
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.UserMedia", resp, resp)
 		}
 		__err = mt.Validate()
 		if __err != nil {

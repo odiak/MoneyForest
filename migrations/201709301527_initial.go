@@ -83,7 +83,7 @@ func init() {
 	}, func(db migrations.DB) error {
 		fmt.Println("dropping initial tables")
 		_, err := db.Exec(`
-			DROP TABLE IF EXISTS users, account_types, accounts, categories, transactions CASCADE;
+			DROP TABLE IF EXISTS users, account_types, accounts, categories, transaction_types, transactions CASCADE;
 			DROP EXTENSION IF EXISTS "pgcrypto";
 		`)
 		return err

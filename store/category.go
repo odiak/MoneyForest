@@ -1,10 +1,10 @@
 package store
 
 type Category struct {
-	ID               string `sql:"type:uuid"`
-	OwnerID          string `sql:"type:uuid"`
+	ID               string `sql:"type:uuid,notnull"`
+	OwnerID          string `sql:"type:uuid,notnull"`
 	Owner            *User
-	Name             string
-	ParentCategoryID string `sql:"type:uuid"`
+	Name             string `sql:",notnull"`
+	ParentCategoryID string `sql:"type:uuid,notnull"`
 	ParentCategory   *Category
 }

@@ -1,4 +1,4 @@
-package main
+package controllers
 
 import (
 	"github.com/go-pg/pg"
@@ -23,10 +23,10 @@ func (c *UserController) Login(ctx *app.LoginUserContext) error {
 	return nil
 }
 
-func ToUserMedia(user *store.User) *app.User {
-	return &app.User{
-		Name:  &user.Name,
-		Email: &user.Email,
+func ToUserMedia(user *store.User) *app.UserMedia {
+	return &app.UserMedia{
+		Name:  user.Name,
+		Email: user.Email,
 	}
 }
 

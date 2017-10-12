@@ -1,5 +1,5 @@
 package store
 
 type AccountType struct {
-	ID string
+	ID string `sql:",notnull"`
 }

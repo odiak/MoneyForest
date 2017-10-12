@@ -9,3 +9,14 @@
 // --version=v1.3.0
 
 package app
+
+import (
+	"fmt"
+	"strings"
+)
+
+// AccountHref returns the resource href.
+func AccountHref(accountID interface{}) string {
+	paramaccountID := strings.TrimLeftFunc(fmt.Sprintf("%v", accountID), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/api/accounts/%v", paramaccountID)
+}

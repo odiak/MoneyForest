@@ -1,5 +1,5 @@
 package store
 
 type TransactionType struct {
-	ID string
+	ID string `sql:",notnull"`
 }

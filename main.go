@@ -3,13 +3,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/go-pg/pg"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/odiak/MoneyForest/app"
+	"github.com/odiak/MoneyForest/constants"
+	"github.com/odiak/MoneyForest/controllers"
+	"github.com/odiak/MoneyForest/store"
 )
 
 func main() {
@@ -35,13 +40,37 @@ func main() {
 		service.LogInfo(fmt.Sprintf("SQL Query: %s, %s", time.Since(event.StartTime), query))
 	})
 
-	// Mount "user" controller
-	c := NewUserController(service, db)
-	app.MountUserController(service, c)
+	app.UseAPIKeyAuthMiddleware(service, NewAPIKeyMiddleware(db))
+	app.MountUserController(service, controllers.NewUserController(service, db))
+	app.MountAccountController(service, controllers.NewAccountController(service, db))
 
 	// Start service
 	if err := service.ListenAndServe(":8000"); err != nil {
 		service.LogError("startup", "err", err)
 	}
 
+}
+
+func NewAPIKeyMiddleware(db *pg.DB) goa.Middleware {
+	scheme := app.NewAPIKeyAuthSecurity()
+
+	return func(h goa.Handler) goa.Handler {
+		return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+			key := req.Header.Get(scheme.Name)
+			if len(key) == 0 {
+				return goa.ErrUnauthorized("missing auth token")
+			}
+			u := store.User{}
+			err := db.Model(&u).Select()
+			if err != nil {
+				if err == pg.ErrNoRows {
+					return goa.ErrUnauthorized("invalid auth token")
+				}
+				return goa.ErrInternal("unknown error")
+			}
+			goa.LogInfo(ctx, "valid auth token", "token", key)
+			ctx = context.WithValue(ctx, constants.CurrentUserKey, &u)
+			return h(ctx, rw, req)
+		}
+	}
 }

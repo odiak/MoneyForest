@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	ID                string `sql:"type:uuid"`
-	Email             string
-	Name              string
-	EncryptedPassword string
+	ID                string `sql:"type:uuid,notnull"`
+	Email             string `sql:",notnull"`
+	Name              string `sql:",notnull"`
+	EncryptedPassword string `sql:",notnull"`
 }
 
 func (u User) String() string {
@@ -41,5 +41,9 @@ func (u *User) validate() error {
 }
 
 func (u *User) BeforeInsert(db orm.DB) error {
+	return u.validate()
+}
+
+func (u *User) BeforeUpdate(db orm.DB) error {
 	return u.validate()
 }

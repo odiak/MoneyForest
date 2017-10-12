@@ -27,6 +27,146 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
+// AccountController is the controller interface for the Account actions.
+type AccountController interface {
+	goa.Muxer
+	Create(*CreateAccountContext) error
+	Delete(*DeleteAccountContext) error
+	List(*ListAccountContext) error
+	Show(*ShowAccountContext) error
+	Update(*UpdateAccountContext) error
+}
+
+// MountAccountController "mounts" a Account resource controller on the given service.
+func MountAccountController(service *goa.Service, ctrl AccountController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateAccountContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*AccountPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("POST", "/api/accounts", ctrl.MuxHandler("create", h, unmarshalCreateAccountPayload))
+	service.LogInfo("mount", "ctrl", "Account", "action", "Create", "route", "POST /api/accounts", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteAccountContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("DELETE", "/api/accounts/:accountID", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Account", "action", "Delete", "route", "DELETE /api/accounts/:accountID", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListAccountContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("GET", "/api/accounts", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "Account", "action", "List", "route", "GET /api/accounts", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewShowAccountContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Show(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("GET", "/api/accounts/:accountID", ctrl.MuxHandler("show", h, nil))
+	service.LogInfo("mount", "ctrl", "Account", "action", "Show", "route", "GET /api/accounts/:accountID", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewUpdateAccountContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*AccountPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Update(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("PUT", "/api/accounts/:accountID", ctrl.MuxHandler("update", h, unmarshalUpdateAccountPayload))
+	service.LogInfo("mount", "ctrl", "Account", "action", "Update", "route", "PUT /api/accounts/:accountID", "security", "APIKeyAuth")
+}
+
+// unmarshalCreateAccountPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateAccountPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &accountPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	payload.Finalize()
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// unmarshalUpdateAccountPayload unmarshals the request body into the context request data Payload field.
+func unmarshalUpdateAccountPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &accountPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	payload.Finalize()
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
 // UserController is the controller interface for the User actions.
 type UserController interface {
 	goa.Muxer
@@ -66,7 +206,7 @@ func MountUserController(service *goa.Service, ctrl UserController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*RegisterUserPayload)
+			rctx.Payload = rawPayload.(*UserPayload)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -78,7 +218,7 @@ func MountUserController(service *goa.Service, ctrl UserController) {
 
 // unmarshalRegisterUserPayload unmarshals the request body into the context request data Payload field.
 func unmarshalRegisterUserPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &registerUserPayload{}
+	payload := &userPayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

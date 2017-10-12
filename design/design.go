@@ -5,6 +5,10 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
+var APIKeyAuth = APIKeySecurity("APIKeyAuth", func() {
+	Header("X-MoneyForest-Auth-Token")
+})
+
 var _ = API("MoneyForest", func() {
 	Title("money management system")
 
@@ -13,19 +17,20 @@ var _ = API("MoneyForest", func() {
 	BasePath("/api")
 	Consumes("application/json")
 	Produces("application/json")
+
+	Security(APIKeyAuth)
 })
 
 var _ = Resource("user", func() {
 	DefaultMedia(UserMedia)
 	BasePath("/users")
+	NoSecurity()
 
 	Action("register", func() {
 		Routing(
 			POST(""),
 		)
-		Payload(UserPayload, func() {
-			Required("name", "email", "password")
-		})
+		Payload(UserPayload)
 		Response(OK)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -38,6 +43,8 @@ var _ = Resource("user", func() {
 		Params(func() {
 			Param("email", String)
 			Param("password", String)
+
+			Required("email", "password")
 		})
 		Response(OK)
 		Response(Unauthorized)
@@ -45,29 +52,69 @@ var _ = Resource("user", func() {
 	})
 })
 
-var UserPayload = Type("UserPayload", func() {
-	Attribute("name", func() {
-		MinLength(2)
-		Example("James Brown")
-	})
-	Attribute("email", func() {
-		Format("email")
-	})
-	Attribute("password", func() {
-		MinLength(8)
-	})
-})
+var _ = Resource("account", func() {
+	DefaultMedia(AccountMedia)
+	BasePath("/accounts")
 
-var UserMedia = MediaType("application/vnd.user+json", func() {
-	Description("user information")
-	Reference(UserPayload)
-	Attributes(func() {
-		Attribute("name")
-		Attribute("email")
+	Action("create", func() {
+		Routing(
+			POST(""),
+		)
+		Payload(AccountPayload)
+		Response(OK)
 	})
 
-	View("default", func() {
-		Attribute("name")
-		Attribute("email")
+	Action("show", func() {
+		Routing(
+			GET(":accountID"),
+		)
+		Params(func() {
+			Param("accountID", UUID)
+		})
+		Response(OK)
+		Response(NotFound)
+	})
+
+	Action("list", func() {
+		Routing(
+			GET(""),
+		)
+		Params(func() {
+			Param("count", Integer, func() {
+				Minimum(1)
+				Maximum(60)
+				Default(30)
+			})
+			Param("page", Integer, func() {
+				Minimum(1)
+				Default(1)
+			})
+		})
+		Response(OK, AccountListMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("update", func() {
+		Routing(
+			PUT(":accountID"),
+		)
+		Params(func() {
+			Param("accountID", UUID)
+		})
+		Payload(AccountPayload)
+		Response(OK, AccountMedia)
+		Response(NotFound)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("delete", func() {
+		Routing(
+			DELETE(":accountID"),
+		)
+		Params(func() {
+			Param("accountID", UUID)
+		})
+		Response(NoContent)
+		Response(NotFound)
 	})
 })
