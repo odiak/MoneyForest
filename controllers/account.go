@@ -74,7 +74,7 @@ func (c *AccountController) List(ctx *app.ListAccountContext) error {
 		Offset((page - 1) * count).
 		Select()
 	if err != nil && err != pg.ErrNoRows {
-		return unexpectedError(c.Service, err)
+		return c.UnexpectedError(err)
 	}
 	hasNext := len(accounts) > count
 	if hasNext {
@@ -97,7 +97,7 @@ func (c *AccountController) Show(ctx *app.ShowAccountContext) error {
 		if err == pg.ErrNoRows {
 			return ctx.NotFound()
 		}
-		return unexpectedError(c.Service, err)
+		return c.UnexpectedError(err)
 	}
 	return ctx.OK(ToAccountMedia(account))
 }
@@ -109,7 +109,7 @@ func (c *AccountController) Create(ctx *app.CreateAccountContext) error {
 	account.OwnerID = currentUser.ID
 	err := c.db.Insert(account)
 	if err != nil {
-		return unexpectedError(c.Service, err)
+		return c.UnexpectedError(err)
 	}
 	return ctx.OK(ToAccountMedia(account))
 }
@@ -134,7 +134,7 @@ func (c *AccountController) Update(ctx *app.UpdateAccountContext) error {
 	UpdateFromAccountPayload(&account, ctx.Payload)
 	err = c.db.Update(&account)
 	if err != nil {
-		return unexpectedError(c.Service, err)
+		return c.UnexpectedError(err)
 	}
 
 	return ctx.OK(ToAccountMedia(&account))
@@ -149,7 +149,7 @@ func (c *AccountController) Delete(ctx *app.DeleteAccountContext) error {
 		Where("owner_id = ?", currentUser.ID).
 		Delete()
 	if err != nil {
-		return unexpectedError(c.Service, err)
+		return c.UnexpectedError(err)
 	}
 
 	return ctx.NoContent()
