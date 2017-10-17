@@ -61,8 +61,10 @@ var TransactionPayload = Type("TransactionPayload", func() {
 	Required("accountId", "amount", "transactionType", "title", "date")
 })
 
-var CategoryPayload = Type("Category", func() {
-	Attribute("name")
+var CategoryPayload = Type("CategoryPayload", func() {
+	Attribute("name", func() {
+		MinLength(1)
+	})
 	Attribute("parentCategoryId", UUID)
 
 	Required("name")

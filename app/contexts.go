@@ -16,6 +16,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"strconv"
+	"unicode/utf8"
 )
 
 // CreateAccountContext provides the account create action context.
@@ -243,7 +244,7 @@ type CreateCategoryContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Payload *Category
+	Payload *CategoryPayload
 }
 
 // NewCreateCategoryContext parses the incoming request URL and body, performs validations and creates the
@@ -264,8 +265,14 @@ func (ctx *CreateCategoryContext) OK(r *CategoryMedia) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// OKFull sends a HTTP response with status code 200.
-func (ctx *CreateCategoryContext) OKFull(r *CategoryMediaFull) error {
+// OKWithChildren sends a HTTP response with status code 200.
+func (ctx *CreateCategoryContext) OKWithChildren(r *CategoryMediaWithChildren) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKWithParent sends a HTTP response with status code 200.
+func (ctx *CreateCategoryContext) OKWithParent(r *CategoryMediaWithParent) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
@@ -381,7 +388,7 @@ type UpdateCategoryContext struct {
 	*goa.ResponseData
 	*goa.RequestData
 	CategoryID uuid.UUID
-	Payload    *Category
+	Payload    *UpdateCategoryPayload
 }
 
 // NewUpdateCategoryContext parses the incoming request URL and body, performs validations and creates the
@@ -405,14 +412,63 @@ func NewUpdateCategoryContext(ctx context.Context, r *http.Request, service *goa
 	return &rctx, err
 }
 
+// updateCategoryPayload is the category update action payload.
+type updateCategoryPayload struct {
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *updateCategoryPayload) Validate() (err error) {
+	if payload.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "name"))
+	}
+	if payload.Name != nil {
+		if utf8.RuneCountInString(*payload.Name) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.name`, *payload.Name, utf8.RuneCountInString(*payload.Name), 1, true))
+		}
+	}
+	return
+}
+
+// Publicize creates UpdateCategoryPayload from updateCategoryPayload
+func (payload *updateCategoryPayload) Publicize() *UpdateCategoryPayload {
+	var pub UpdateCategoryPayload
+	if payload.Name != nil {
+		pub.Name = *payload.Name
+	}
+	return &pub
+}
+
+// UpdateCategoryPayload is the category update action payload.
+type UpdateCategoryPayload struct {
+	Name string `form:"name" json:"name" xml:"name"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *UpdateCategoryPayload) Validate() (err error) {
+	if payload.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "name"))
+	}
+	if utf8.RuneCountInString(payload.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.name`, payload.Name, utf8.RuneCountInString(payload.Name), 1, true))
+	}
+	return
+}
+
 // OK sends a HTTP response with status code 200.
 func (ctx *UpdateCategoryContext) OK(r *CategoryMedia) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// OKFull sends a HTTP response with status code 200.
-func (ctx *UpdateCategoryContext) OKFull(r *CategoryMediaFull) error {
+// OKWithChildren sends a HTTP response with status code 200.
+func (ctx *UpdateCategoryContext) OKWithChildren(r *CategoryMediaWithChildren) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKWithParent sends a HTTP response with status code 200.
+func (ctx *UpdateCategoryContext) OKWithParent(r *CategoryMediaWithParent) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }

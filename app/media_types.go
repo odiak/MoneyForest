@@ -89,23 +89,54 @@ func (mt *CategoryMedia) Validate() (err error) {
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
+	if utf8.RuneCountInString(mt.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 1, true))
+	}
 	return
 }
 
-// CategoryMedia media type (full view)
+// CategoryMedia media type (withChildren view)
 //
-// Identifier: application/vnd.moneyforest.category+json; view=full
-type CategoryMediaFull struct {
-	ID             uuid.UUID          `form:"id" json:"id" xml:"id"`
-	Name           string             `form:"name" json:"name" xml:"name"`
-	ParentCategory *CategoryMediaFull `form:"parentCategory,omitempty" json:"parentCategory,omitempty" xml:"parentCategory,omitempty"`
+// Identifier: application/vnd.moneyforest.category+json; view=withChildren
+type CategoryMediaWithChildren struct {
+	ChildCategories  CategoryMediaWithChildrenCollection `form:"childCategories,omitempty" json:"childCategories,omitempty" xml:"childCategories,omitempty"`
+	ID               uuid.UUID                           `form:"id" json:"id" xml:"id"`
+	Name             string                              `form:"name" json:"name" xml:"name"`
+	ParentCategoryID *uuid.UUID                          `form:"parentCategoryId,omitempty" json:"parentCategoryId,omitempty" xml:"parentCategoryId,omitempty"`
 }
 
-// Validate validates the CategoryMediaFull media type instance.
-func (mt *CategoryMediaFull) Validate() (err error) {
+// Validate validates the CategoryMediaWithChildren media type instance.
+func (mt *CategoryMediaWithChildren) Validate() (err error) {
 
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
+	}
+	if err2 := mt.ChildCategories.Validate(); err2 != nil {
+		err = goa.MergeErrors(err, err2)
+	}
+	if utf8.RuneCountInString(mt.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 1, true))
+	}
+	return
+}
+
+// CategoryMedia media type (withParent view)
+//
+// Identifier: application/vnd.moneyforest.category+json; view=withParent
+type CategoryMediaWithParent struct {
+	ID             uuid.UUID                `form:"id" json:"id" xml:"id"`
+	Name           string                   `form:"name" json:"name" xml:"name"`
+	ParentCategory *CategoryMediaWithParent `form:"parentCategory,omitempty" json:"parentCategory,omitempty" xml:"parentCategory,omitempty"`
+}
+
+// Validate validates the CategoryMediaWithParent media type instance.
+func (mt *CategoryMediaWithParent) Validate() (err error) {
+
+	if mt.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
+	}
+	if utf8.RuneCountInString(mt.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 1, true))
 	}
 	if mt.ParentCategory != nil {
 		if err2 := mt.ParentCategory.Validate(); err2 != nil {
@@ -119,8 +150,8 @@ func (mt *CategoryMediaFull) Validate() (err error) {
 //
 // Identifier: application/vnd.moneyforest.category-list+json; view=default
 type CategoryListMedia struct {
-	Categories []*CategoryMedia `form:"categories" json:"categories" xml:"categories"`
-	HasNext    bool             `form:"hasNext" json:"hasNext" xml:"hasNext"`
+	Categories CategoryMediaWithChildrenCollection `form:"categories" json:"categories" xml:"categories"`
+	HasNext    bool                                `form:"hasNext" json:"hasNext" xml:"hasNext"`
 }
 
 // Validate validates the CategoryListMedia media type instance.
@@ -129,7 +160,54 @@ func (mt *CategoryListMedia) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "categories"))
 	}
 
-	for _, e := range mt.Categories {
+	if err2 := mt.Categories.Validate(); err2 != nil {
+		err = goa.MergeErrors(err, err2)
+	}
+	return
+}
+
+// CategoryMediaCollection is the media type for an array of CategoryMedia (default view)
+//
+// Identifier: application/vnd.moneyforest.category+json; type=collection; view=default
+type CategoryMediaCollection []*CategoryMedia
+
+// Validate validates the CategoryMediaCollection media type instance.
+func (mt CategoryMediaCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// CategoryMediaCollection is the media type for an array of CategoryMedia (withChildren view)
+//
+// Identifier: application/vnd.moneyforest.category+json; type=collection; view=withChildren
+type CategoryMediaWithChildrenCollection []*CategoryMediaWithChildren
+
+// Validate validates the CategoryMediaWithChildrenCollection media type instance.
+func (mt CategoryMediaWithChildrenCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// CategoryMediaCollection is the media type for an array of CategoryMedia (withParent view)
+//
+// Identifier: application/vnd.moneyforest.category+json; type=collection; view=withParent
+type CategoryMediaWithParentCollection []*CategoryMediaWithParent
+
+// Validate validates the CategoryMediaWithParentCollection media type instance.
+func (mt CategoryMediaWithParentCollection) Validate() (err error) {
+	for _, e := range mt {
 		if e != nil {
 			if err2 := e.Validate(); err2 != nil {
 				err = goa.MergeErrors(err, err2)

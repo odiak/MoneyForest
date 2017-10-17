@@ -102,9 +102,8 @@ var CategoryMedia = MediaType("application/vnd.moneyforest.category+json", func(
 		Attribute("id", UUID)
 		Attribute("name")
 		Attribute("parentCategoryId", UUID)
-		Attribute("parentCategory", "application/vnd.moneyforest.category", func() {
-			View("full")
-		})
+		Attribute("parentCategory", "application/vnd.moneyforest.category")
+		Attribute("childCategories", CollectionOf("application/vnd.moneyforest.category"))
 
 		Required("id", "name")
 	})
@@ -115,10 +114,21 @@ var CategoryMedia = MediaType("application/vnd.moneyforest.category+json", func(
 		Attribute("parentCategoryId")
 	})
 
-	View("full", func() {
+	View("withParent", func() {
 		Attribute("id")
 		Attribute("name")
-		Attribute("parentCategory")
+		Attribute("parentCategory", func() {
+			View("withParent")
+		})
+	})
+
+	View("withChildren", func() {
+		Attribute("id")
+		Attribute("name")
+		Attribute("parentCategoryId")
+		Attribute("childCategories", func() {
+			View("withChildren")
+		})
 	})
 })
 
@@ -126,14 +136,16 @@ var CategoryListMedia = MediaType("application/vnd.moneyforest.category-list+jso
 	TypeName("CategoryListMedia")
 
 	Attributes(func() {
-		Attribute("categories", ArrayOf(CategoryMedia))
+		Attribute("categories", CollectionOf(CategoryMedia))
 		Attribute("hasNext", Boolean)
 
 		Required("categories", "hasNext")
 	})
 
 	View("default", func() {
-		Attribute("categories")
+		Attribute("categories", func() {
+			View("withChildren")
+		})
 		Attribute("hasNext")
 	})
 })

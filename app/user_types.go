@@ -122,23 +122,28 @@ func (ut *AccountPayload) Validate() (err error) {
 	return
 }
 
-// category user type.
-type category struct {
+// categoryPayload user type.
+type categoryPayload struct {
 	Name             *string    `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	ParentCategoryID *uuid.UUID `form:"parentCategoryId,omitempty" json:"parentCategoryId,omitempty" xml:"parentCategoryId,omitempty"`
 }
 
-// Validate validates the category type instance.
-func (ut *category) Validate() (err error) {
+// Validate validates the categoryPayload type instance.
+func (ut *categoryPayload) Validate() (err error) {
 	if ut.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`request`, "name"))
+	}
+	if ut.Name != nil {
+		if utf8.RuneCountInString(*ut.Name) < 1 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`request.name`, *ut.Name, utf8.RuneCountInString(*ut.Name), 1, true))
+		}
 	}
 	return
 }
 
-// Publicize creates Category from category
-func (ut *category) Publicize() *Category {
-	var pub Category
+// Publicize creates CategoryPayload from categoryPayload
+func (ut *categoryPayload) Publicize() *CategoryPayload {
+	var pub CategoryPayload
 	if ut.Name != nil {
 		pub.Name = *ut.Name
 	}
@@ -148,16 +153,19 @@ func (ut *category) Publicize() *Category {
 	return &pub
 }
 
-// Category user type.
-type Category struct {
+// CategoryPayload user type.
+type CategoryPayload struct {
 	Name             string     `form:"name" json:"name" xml:"name"`
 	ParentCategoryID *uuid.UUID `form:"parentCategoryId,omitempty" json:"parentCategoryId,omitempty" xml:"parentCategoryId,omitempty"`
 }
 
-// Validate validates the Category type instance.
-func (ut *Category) Validate() (err error) {
+// Validate validates the CategoryPayload type instance.
+func (ut *CategoryPayload) Validate() (err error) {
 	if ut.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`type`, "name"))
+	}
+	if utf8.RuneCountInString(ut.Name) < 1 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`type.name`, ut.Name, utf8.RuneCountInString(ut.Name), 1, true))
 	}
 	return
 }

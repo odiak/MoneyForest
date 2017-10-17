@@ -193,7 +193,7 @@ func MountCategoryController(service *goa.Service, ctrl CategoryController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*Category)
+			rctx.Payload = rawPayload.(*CategoryPayload)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -247,7 +247,7 @@ func MountCategoryController(service *goa.Service, ctrl CategoryController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*Category)
+			rctx.Payload = rawPayload.(*UpdateCategoryPayload)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -260,7 +260,7 @@ func MountCategoryController(service *goa.Service, ctrl CategoryController) {
 
 // unmarshalCreateCategoryPayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreateCategoryPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &category{}
+	payload := &categoryPayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}
@@ -275,7 +275,7 @@ func unmarshalCreateCategoryPayload(ctx context.Context, service *goa.Service, r
 
 // unmarshalUpdateCategoryPayload unmarshals the request body into the context request data Payload field.
 func unmarshalUpdateCategoryPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &category{}
+	payload := &updateCategoryPayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

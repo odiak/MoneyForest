@@ -146,7 +146,7 @@ var _ = Resource("category", func() {
 			POST(""),
 		)
 		Payload(CategoryPayload)
-		Response(OK, CategoryMedia)
+		Response("OK", CategoryMedia)
 		Response(BadRequest, ErrorMedia)
 	})
 
@@ -157,8 +157,13 @@ var _ = Resource("category", func() {
 		Params(func() {
 			Param("categoryID", UUID)
 		})
-		Payload(CategoryPayload)
-		Response(OK, CategoryMedia)
+		Payload(func() {
+			Member("name", String, func() {
+				MinLength(1)
+			})
+			Required("name")
+		})
+		Response("OK", CategoryMedia)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
 	})
