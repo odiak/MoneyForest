@@ -5,7 +5,7 @@ import (
 )
 
 type Account struct {
-	ID          string `sql:"type:uuid,notnull"`
+	ID          string `sql:"type:uuid"`
 	OwnerID     string `sql:"type:uuid,notnull"`
 	Owner       User
 	Name        string `sql:",notnull"`

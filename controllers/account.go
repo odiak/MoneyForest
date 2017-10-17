@@ -6,7 +6,7 @@ import (
 	"github.com/odiak/MoneyForest/app"
 	"github.com/odiak/MoneyForest/constants"
 	"github.com/odiak/MoneyForest/store"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 // AccountController implements the user resource.
