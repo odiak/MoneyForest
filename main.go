@@ -61,8 +61,11 @@ func NewAPIKeyMiddleware(db *pg.DB) goa.Middleware {
 			if len(key) == 0 {
 				return goa.ErrUnauthorized("missing auth token")
 			}
-			u := store.User{}
-			err := db.Model(&u).Select()
+			ut := store.UserToken{}
+			err := db.Model(&ut).
+				Column("user_token.*", "User").
+				Where("user_token.token = ?", key).
+				Select()
 			if err != nil {
 				if err == pg.ErrNoRows {
 					return goa.ErrUnauthorized("invalid auth token")
@@ -70,7 +73,7 @@ func NewAPIKeyMiddleware(db *pg.DB) goa.Middleware {
 				return goa.ErrInternal("unknown error")
 			}
 			goa.LogInfo(ctx, "valid auth token", "token", key)
-			ctx = context.WithValue(ctx, constants.CurrentUserKey, &u)
+			ctx = context.WithValue(ctx, constants.CurrentUserKey, ut.User)
 			return h(ctx, rw, req)
 		}
 	}
