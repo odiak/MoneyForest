@@ -26,7 +26,7 @@ func NewUserController(service *goa.Service, db orm.DB) *UserController {
 func (c *UserController) Login(ctx *app.LoginUserContext) error {
 	user := store.User{}
 
-	err := c.db.Model(&user).Where("email = ?", ctx.Email).Select()
+	err := c.db.Model(&user).Where("email = ?", ctx.Payload.Email).Select()
 	if err != nil {
 		if err == pg.ErrNoRows {
 			return ctx.Unauthorized()
@@ -34,7 +34,7 @@ func (c *UserController) Login(ctx *app.LoginUserContext) error {
 		return c.UnexpectedError(err)
 	}
 
-	if !user.ValidPassword(ctx.Password) {
+	if !user.ValidPassword(ctx.Payload.Password) {
 		return ctx.Unauthorized()
 	}
 
