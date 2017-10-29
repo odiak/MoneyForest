@@ -5,7 +5,7 @@ import (
 )
 
 type Transaction struct {
-	ID              string `sql:"type:uuid,notnull"`
+	ID              string `sql:"type:uuid"`
 	AccountID       string `sql:"type:uuid,notnull"`
 	Account         *Account
 	Amount          int32  `sql:",notnull"`

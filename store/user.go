@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID                string `sql:"type:uuid,notnull"`
+	ID                string `sql:"type:uuid"`
 	Email             string `sql:",notnull"`
 	Name              string `sql:",notnull"`
 	EncryptedPassword string `sql:",notnull"`
