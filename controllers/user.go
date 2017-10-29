@@ -10,18 +10,35 @@ import (
 
 // UserController implements the user resource.
 type UserController struct {
-	*goa.Controller
+	*CommonController
 	db orm.DB
 }
 
 // NewUserController creates a user controller.
 func NewUserController(service *goa.Service, db orm.DB) *UserController {
-	return &UserController{Controller: service.NewController("UserController"), db: db}
+	return &UserController{
+		CommonController: NewCommonController(service, "UserController"),
+		db:               db,
+	}
 }
 
 // Login runs the login action.
 func (c *UserController) Login(ctx *app.LoginUserContext) error {
-	return nil
+	user := store.User{}
+
+	err := c.db.Model(&user).Where("email = ?", ctx.Email).Select()
+	if err != nil {
+		if err == pg.ErrNoRows {
+			return ctx.Unauthorized()
+		}
+		return c.UnexpectedError(err)
+	}
+
+	if !user.ValidPassword(ctx.Password) {
+		return ctx.Unauthorized()
+	}
+
+	return ctx.OK(ToUserMedia(&user))
 }
 
 func ToUserMedia(user *store.User) *app.UserMedia {

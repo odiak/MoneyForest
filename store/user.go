@@ -27,6 +27,10 @@ func (u *User) SetPassword(pw string) error {
 	return nil
 }
 
+func (u User) ValidPassword(pw string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(pw)) == nil
+}
+
 func (u *User) validate() error {
 	if u.Name == "" {
 		return ValidationError("name is required")
