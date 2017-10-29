@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-pg/migrations"
 	"github.com/go-pg/pg"
+	"github.com/odiak/MoneyForest/config"
 )
 
 const usageText = `This program runs command on the db. Supported commands are:
@@ -24,11 +25,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	db := pg.Connect(&pg.Options{
-		User:     "kaido",
-		Addr:     "127.0.0.1:5432",
-		Database: "money_forest",
-	})
+	db := pg.Connect(config.PgOptions)
 
 	oldVersion, newVersion, err := migrations.Run(db, flag.Args()...)
 	if err != nil {

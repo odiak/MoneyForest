@@ -12,6 +12,7 @@ import (
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/odiak/MoneyForest/app"
+	"github.com/odiak/MoneyForest/config"
 	"github.com/odiak/MoneyForest/constants"
 	"github.com/odiak/MoneyForest/controllers"
 	"github.com/odiak/MoneyForest/store"
@@ -27,11 +28,7 @@ func main() {
 	service.Use(middleware.ErrorHandler(service, true))
 	service.Use(middleware.Recover())
 
-	db := pg.Connect(&pg.Options{
-		User:     "kaido",
-		Addr:     "127.0.0.1:5432",
-		Database: "money_forest",
-	})
+	db := pg.Connect(config.PgOptions)
 	db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
 		query, err := event.FormattedQuery()
 		if err != nil {
@@ -46,7 +43,7 @@ func main() {
 	app.MountCategoryController(service, controllers.NewCategoryController(service, db))
 
 	// Start service
-	if err := service.ListenAndServe(":8000"); err != nil {
+	if err := service.ListenAndServe(fmt.Sprintf(":%d", config.Port)); err != nil {
 		service.LogError("startup", "err", err)
 	}
 
