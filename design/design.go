@@ -40,7 +40,7 @@ var _ = Resource("user", func() {
 		Routing(
 			POST("/login"),
 		)
-		Params(func() {
+		Payload(func() {
 			Param("email", String)
 			Param("password", String)
 

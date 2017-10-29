@@ -490,8 +490,7 @@ type LoginUserContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Email    string
-	Password string
+	Payload *LoginUserPayload
 }
 
 // NewLoginUserContext parses the incoming request URL and body, performs validations and creates the
@@ -503,24 +502,61 @@ func NewLoginUserContext(ctx context.Context, r *http.Request, service *goa.Serv
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := LoginUserContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramEmail := req.Params["email"]
-	if len(paramEmail) == 0 {
-		err = goa.MergeErrors(err, goa.MissingParamError("email"))
-	} else {
-		rawEmail := paramEmail[0]
-		rctx.Email = rawEmail
-		if err2 := goa.ValidateFormat(goa.FormatEmail, rctx.Email); err2 != nil {
-			err = goa.MergeErrors(err, goa.InvalidFormatError(`email`, rctx.Email, goa.FormatEmail, err2))
+	return &rctx, err
+}
+
+// loginUserPayload is the user login action payload.
+type loginUserPayload struct {
+	Email    *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	Password *string `form:"password,omitempty" json:"password,omitempty" xml:"password,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *loginUserPayload) Validate() (err error) {
+	if payload.Email == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "email"))
+	}
+	if payload.Password == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "password"))
+	}
+	if payload.Email != nil {
+		if err2 := goa.ValidateFormat(goa.FormatEmail, *payload.Email); err2 != nil {
+			err = goa.MergeErrors(err, goa.InvalidFormatError(`raw.email`, *payload.Email, goa.FormatEmail, err2))
 		}
 	}
-	paramPassword := req.Params["password"]
-	if len(paramPassword) == 0 {
-		err = goa.MergeErrors(err, goa.MissingParamError("password"))
-	} else {
-		rawPassword := paramPassword[0]
-		rctx.Password = rawPassword
+	return
+}
+
+// Publicize creates LoginUserPayload from loginUserPayload
+func (payload *loginUserPayload) Publicize() *LoginUserPayload {
+	var pub LoginUserPayload
+	if payload.Email != nil {
+		pub.Email = *payload.Email
 	}
-	return &rctx, err
+	if payload.Password != nil {
+		pub.Password = *payload.Password
+	}
+	return &pub
+}
+
+// LoginUserPayload is the user login action payload.
+type LoginUserPayload struct {
+	Email    string `form:"email" json:"email" xml:"email"`
+	Password string `form:"password" json:"password" xml:"password"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *LoginUserPayload) Validate() (err error) {
+	if payload.Email == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "email"))
+	}
+	if payload.Password == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "password"))
+	}
+	if err2 := goa.ValidateFormat(goa.FormatEmail, payload.Email); err2 != nil {
+		err = goa.MergeErrors(err, goa.InvalidFormatError(`raw.email`, payload.Email, goa.FormatEmail, err2))
+	}
+	return
 }
 
 // OK sends a HTTP response with status code 200.

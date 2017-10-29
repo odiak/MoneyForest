@@ -310,9 +310,15 @@ func MountUserController(service *goa.Service, ctrl UserController) {
 		if err != nil {
 			return err
 		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*LoginUserPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
 		return ctrl.Login(rctx)
 	}
-	service.Mux.Handle("POST", "/api/users/login", ctrl.MuxHandler("login", h, nil))
+	service.Mux.Handle("POST", "/api/users/login", ctrl.MuxHandler("login", h, unmarshalLoginUserPayload))
 	service.LogInfo("mount", "ctrl", "User", "action", "Login", "route", "POST /api/users/login")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
@@ -335,6 +341,21 @@ func MountUserController(service *goa.Service, ctrl UserController) {
 	}
 	service.Mux.Handle("POST", "/api/users", ctrl.MuxHandler("register", h, unmarshalRegisterUserPayload))
 	service.LogInfo("mount", "ctrl", "User", "action", "Register", "route", "POST /api/users")
+}
+
+// unmarshalLoginUserPayload unmarshals the request body into the context request data Payload field.
+func unmarshalLoginUserPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &loginUserPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
 }
 
 // unmarshalRegisterUserPayload unmarshals the request body into the context request data Payload field.
