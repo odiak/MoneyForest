@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 	"github.com/goadesign/goa"
 	"github.com/odiak/MoneyForest/app"
 	"github.com/odiak/MoneyForest/store"
@@ -10,11 +11,11 @@ import (
 // UserController implements the user resource.
 type UserController struct {
 	*goa.Controller
-	db *pg.DB
+	db orm.DB
 }
 
 // NewUserController creates a user controller.
-func NewUserController(service *goa.Service, db *pg.DB) *UserController {
+func NewUserController(service *goa.Service, db orm.DB) *UserController {
 	return &UserController{Controller: service.NewController("UserController"), db: db}
 }
 

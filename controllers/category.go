@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 	"github.com/goadesign/goa"
 	"github.com/odiak/MoneyForest/app"
 	"github.com/odiak/MoneyForest/store"
@@ -10,10 +11,10 @@ import (
 
 type CategoryController struct {
 	*CommonController
-	db *pg.DB
+	db orm.DB
 }
 
-func NewCategoryController(service *goa.Service, db *pg.DB) *CategoryController {
+func NewCategoryController(service *goa.Service, db orm.DB) *CategoryController {
 	return &CategoryController{
 		CommonController: NewCommonController(service, "CategoryController"),
 		db:               db,

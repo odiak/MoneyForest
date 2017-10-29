@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 	"github.com/goadesign/goa"
 	"github.com/odiak/MoneyForest/app"
 	"github.com/odiak/MoneyForest/constants"
@@ -12,11 +13,11 @@ import (
 // AccountController implements the user resource.
 type AccountController struct {
 	*CommonController
-	db *pg.DB
+	db orm.DB
 }
 
 // NewAccountController creates a user controller.
-func NewAccountController(service *goa.Service, db *pg.DB) *AccountController {
+func NewAccountController(service *goa.Service, db orm.DB) *AccountController {
 	return &AccountController{
 		CommonController: NewCommonController(service, "AccountController"),
 		db:               db,

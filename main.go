@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 	"github.com/odiak/MoneyForest/app"
@@ -49,7 +50,7 @@ func main() {
 
 }
 
-func NewAPIKeyMiddleware(db *pg.DB) goa.Middleware {
+func NewAPIKeyMiddleware(db orm.DB) goa.Middleware {
 	scheme := app.NewAPIKeyAuthSecurity()
 
 	return func(h goa.Handler) goa.Handler {
