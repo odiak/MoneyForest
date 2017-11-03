@@ -288,6 +288,146 @@ func unmarshalUpdateCategoryPayload(ctx context.Context, service *goa.Service, r
 	return nil
 }
 
+// TransactionController is the controller interface for the Transaction actions.
+type TransactionController interface {
+	goa.Muxer
+	Create(*CreateTransactionContext) error
+	Delete(*DeleteTransactionContext) error
+	List(*ListTransactionContext) error
+	Show(*ShowTransactionContext) error
+	Update(*UpdateTransactionContext) error
+}
+
+// MountTransactionController "mounts" a Transaction resource controller on the given service.
+func MountTransactionController(service *goa.Service, ctrl TransactionController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateTransactionContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*TransactionPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("POST", "/api/transactions", ctrl.MuxHandler("create", h, unmarshalCreateTransactionPayload))
+	service.LogInfo("mount", "ctrl", "Transaction", "action", "Create", "route", "POST /api/transactions", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteTransactionContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("DELETE", "/api/transactions/:transactionID", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Transaction", "action", "Delete", "route", "DELETE /api/transactions/:transactionID", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListTransactionContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("GET", "/api/transactions", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "Transaction", "action", "List", "route", "GET /api/transactions", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewShowTransactionContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Show(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("GET", "/api/transactions/:transactionID", ctrl.MuxHandler("show", h, nil))
+	service.LogInfo("mount", "ctrl", "Transaction", "action", "Show", "route", "GET /api/transactions/:transactionID", "security", "APIKeyAuth")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewUpdateTransactionContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*TransactionPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Update(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("PUT", "/api/transactions/:transactionID", ctrl.MuxHandler("update", h, unmarshalUpdateTransactionPayload))
+	service.LogInfo("mount", "ctrl", "Transaction", "action", "Update", "route", "PUT /api/transactions/:transactionID", "security", "APIKeyAuth")
+}
+
+// unmarshalCreateTransactionPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateTransactionPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &transactionPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	payload.Finalize()
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// unmarshalUpdateTransactionPayload unmarshals the request body into the context request data Payload field.
+func unmarshalUpdateTransactionPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &transactionPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	payload.Finalize()
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
 // UserController is the controller interface for the User actions.
 type UserController interface {
 	goa.Muxer

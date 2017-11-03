@@ -485,6 +485,237 @@ func (ctx *UpdateCategoryContext) NotFound() error {
 	return nil
 }
 
+// CreateTransactionContext provides the transaction create action context.
+type CreateTransactionContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Payload *TransactionPayload
+}
+
+// NewCreateTransactionContext parses the incoming request URL and body, performs validations and creates the
+// context used by the transaction controller create action.
+func NewCreateTransactionContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateTransactionContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := CreateTransactionContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *CreateTransactionContext) OK(r *TransactionMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *CreateTransactionContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// DeleteTransactionContext provides the transaction delete action context.
+type DeleteTransactionContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	TransactionID uuid.UUID
+}
+
+// NewDeleteTransactionContext parses the incoming request URL and body, performs validations and creates the
+// context used by the transaction controller delete action.
+func NewDeleteTransactionContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteTransactionContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := DeleteTransactionContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramTransactionID := req.Params["transactionID"]
+	if len(paramTransactionID) > 0 {
+		rawTransactionID := paramTransactionID[0]
+		if transactionID, err2 := uuid.FromString(rawTransactionID); err2 == nil {
+			rctx.TransactionID = transactionID
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("transactionID", rawTransactionID, "uuid"))
+		}
+	}
+	return &rctx, err
+}
+
+// NoContent sends a HTTP response with status code 204.
+func (ctx *DeleteTransactionContext) NoContent() error {
+	ctx.ResponseData.WriteHeader(204)
+	return nil
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeleteTransactionContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// ListTransactionContext provides the transaction list action context.
+type ListTransactionContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	AccountID *uuid.UUID
+	Count     int
+	Page      int
+}
+
+// NewListTransactionContext parses the incoming request URL and body, performs validations and creates the
+// context used by the transaction controller list action.
+func NewListTransactionContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListTransactionContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ListTransactionContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramAccountID := req.Params["accountID"]
+	if len(paramAccountID) > 0 {
+		rawAccountID := paramAccountID[0]
+		if accountID, err2 := uuid.FromString(rawAccountID); err2 == nil {
+			tmp11 := &accountID
+			rctx.AccountID = tmp11
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("accountID", rawAccountID, "uuid"))
+		}
+	}
+	paramCount := req.Params["count"]
+	if len(paramCount) == 0 {
+		rctx.Count = 40
+	} else {
+		rawCount := paramCount[0]
+		if count, err2 := strconv.Atoi(rawCount); err2 == nil {
+			rctx.Count = count
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("count", rawCount, "integer"))
+		}
+		if rctx.Count < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`count`, rctx.Count, 1, true))
+		}
+		if rctx.Count > 100 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`count`, rctx.Count, 100, false))
+		}
+	}
+	paramPage := req.Params["page"]
+	if len(paramPage) == 0 {
+		rctx.Page = 1
+	} else {
+		rawPage := paramPage[0]
+		if page, err2 := strconv.Atoi(rawPage); err2 == nil {
+			rctx.Page = page
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("page", rawPage, "integer"))
+		}
+		if rctx.Page < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`page`, rctx.Page, 1, true))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ListTransactionContext) OK(r *TransactionListMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction-list+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// ShowTransactionContext provides the transaction show action context.
+type ShowTransactionContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	TransactionID uuid.UUID
+}
+
+// NewShowTransactionContext parses the incoming request URL and body, performs validations and creates the
+// context used by the transaction controller show action.
+func NewShowTransactionContext(ctx context.Context, r *http.Request, service *goa.Service) (*ShowTransactionContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ShowTransactionContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramTransactionID := req.Params["transactionID"]
+	if len(paramTransactionID) > 0 {
+		rawTransactionID := paramTransactionID[0]
+		if transactionID, err2 := uuid.FromString(rawTransactionID); err2 == nil {
+			rctx.TransactionID = transactionID
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("transactionID", rawTransactionID, "uuid"))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ShowTransactionContext) OK(r *TransactionMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *ShowTransactionContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// UpdateTransactionContext provides the transaction update action context.
+type UpdateTransactionContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	TransactionID uuid.UUID
+	Payload       *TransactionPayload
+}
+
+// NewUpdateTransactionContext parses the incoming request URL and body, performs validations and creates the
+// context used by the transaction controller update action.
+func NewUpdateTransactionContext(ctx context.Context, r *http.Request, service *goa.Service) (*UpdateTransactionContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := UpdateTransactionContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramTransactionID := req.Params["transactionID"]
+	if len(paramTransactionID) > 0 {
+		rawTransactionID := paramTransactionID[0]
+		if transactionID, err2 := uuid.FromString(rawTransactionID); err2 == nil {
+			rctx.TransactionID = transactionID
+		} else {
+			err = goa.MergeErrors(err, goa.InvalidParamTypeError("transactionID", rawTransactionID, "uuid"))
+		}
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *UpdateTransactionContext) OK(r *TransactionMedia) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *UpdateTransactionContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *UpdateTransactionContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // LoginUserContext provides the user login action context.
 type LoginUserContext struct {
 	context.Context

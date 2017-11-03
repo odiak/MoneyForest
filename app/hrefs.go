@@ -20,3 +20,9 @@ func AccountHref(accountID interface{}) string {
 	paramaccountID := strings.TrimLeftFunc(fmt.Sprintf("%v", accountID), func(r rune) bool { return r == '/' })
 	return fmt.Sprintf("/api/accounts/%v", paramaccountID)
 }
+
+// TransactionHref returns the resource href.
+func TransactionHref(transactionID interface{}) string {
+	paramtransactionID := strings.TrimLeftFunc(fmt.Sprintf("%v", transactionID), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/api/transactions/%v", paramtransactionID)
+}

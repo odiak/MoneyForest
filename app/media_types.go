@@ -221,15 +221,15 @@ func (mt CategoryMediaWithParentCollection) Validate() (err error) {
 //
 // Identifier: application/vnd.moneyforest.transaction+json; view=default
 type TransactionMedia struct {
-	AccountID       uuid.UUID      `form:"accountId" json:"accountId" xml:"accountId"`
-	Amount          int            `form:"amount" json:"amount" xml:"amount"`
-	Category        *CategoryMedia `form:"category,omitempty" json:"category,omitempty" xml:"category,omitempty"`
-	Date            string         `form:"date" json:"date" xml:"date"`
-	Description     string         `form:"description" json:"description" xml:"description"`
-	ID              uuid.UUID      `form:"id" json:"id" xml:"id"`
-	OriginalTitle   string         `form:"originalTitle" json:"originalTitle" xml:"originalTitle"`
-	Title           string         `form:"title" json:"title" xml:"title"`
-	TransactionType string         `form:"transactionType" json:"transactionType" xml:"transactionType"`
+	AccountID       uuid.UUID                `form:"accountId" json:"accountId" xml:"accountId"`
+	Amount          int                      `form:"amount" json:"amount" xml:"amount"`
+	Category        *CategoryMediaWithParent `form:"category,omitempty" json:"category,omitempty" xml:"category,omitempty"`
+	Date            string                   `form:"date" json:"date" xml:"date"`
+	Description     string                   `form:"description" json:"description" xml:"description"`
+	ID              uuid.UUID                `form:"id" json:"id" xml:"id"`
+	OriginalTitle   string                   `form:"originalTitle" json:"originalTitle" xml:"originalTitle"`
+	Title           string                   `form:"title" json:"title" xml:"title"`
+	TransactionType string                   `form:"transactionType" json:"transactionType" xml:"transactionType"`
 }
 
 // Validate validates the TransactionMedia media type instance.
@@ -240,12 +240,6 @@ func (mt *TransactionMedia) Validate() (err error) {
 	}
 	if mt.Title == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "title"))
-	}
-	if mt.OriginalTitle == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "originalTitle"))
-	}
-	if mt.Description == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "description"))
 	}
 	if mt.Date == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "date"))
@@ -260,6 +254,43 @@ func (mt *TransactionMedia) Validate() (err error) {
 	}
 	if !(mt.TransactionType == "expense" || mt.TransactionType == "income" || mt.TransactionType == "transfer" || mt.TransactionType == "balance-adjustment") {
 		err = goa.MergeErrors(err, goa.InvalidEnumValueError(`response.transactionType`, mt.TransactionType, []interface{}{"expense", "income", "transfer", "balance-adjustment"}))
+	}
+	return
+}
+
+// TransactionListMedia media type (default view)
+//
+// Identifier: application/vnd.moneyforest.transaction-list+json; view=default
+type TransactionListMedia struct {
+	HasNext      bool                       `form:"hasNext" json:"hasNext" xml:"hasNext"`
+	Transactions TransactionMediaCollection `form:"transactions" json:"transactions" xml:"transactions"`
+}
+
+// Validate validates the TransactionListMedia media type instance.
+func (mt *TransactionListMedia) Validate() (err error) {
+	if mt.Transactions == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "transactions"))
+	}
+
+	if err2 := mt.Transactions.Validate(); err2 != nil {
+		err = goa.MergeErrors(err, err2)
+	}
+	return
+}
+
+// TransactionMediaCollection is the media type for an array of TransactionMedia (default view)
+//
+// Identifier: application/vnd.moneyforest.transaction+json; type=collection; view=default
+type TransactionMediaCollection []*TransactionMedia
+
+// Validate validates the TransactionMediaCollection media type instance.
+func (mt TransactionMediaCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
 	}
 	return
 }
