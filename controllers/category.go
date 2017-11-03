@@ -34,6 +34,10 @@ func FromCategoryPayload(payload *app.CategoryPayload) *store.Category {
 }
 
 func ToCategoryMedia(category *store.Category) *app.CategoryMedia {
+	if category == nil {
+		return nil
+	}
+
 	ID, _ := uuid.FromString(category.ID)
 	var parentID *uuid.UUID
 	if category.ParentCategoryID != nil {
@@ -63,6 +67,18 @@ func ToCategoryMediaWithChildren(category *store.Category) *app.CategoryMediaWit
 		Name:             category.Name,
 		ParentCategoryID: parentID,
 		ChildCategories:  children,
+	}
+}
+
+func ToCategoryMediaWithParent(category *store.Category) *app.CategoryMediaWithParent {
+	var parent *app.CategoryMediaWithParent
+	if category.ParentCategory != nil {
+		parent = ToCategoryMediaWithParent(category.ParentCategory)
+	}
+	return &app.CategoryMediaWithParent{
+		ID:             uuid.FromStringOrNil(category.ID),
+		Name:           category.Name,
+		ParentCategory: parent,
 	}
 }
 

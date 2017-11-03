@@ -8,11 +8,11 @@ type Transaction struct {
 	ID              string `sql:"type:uuid"`
 	AccountID       string `sql:"type:uuid,notnull"`
 	Account         *Account
-	Amount          int32  `sql:",notnull"`
-	Title           string `sql:",notnull"`
-	OriginalTitle   string `sql:",notnull"`
-	Description     string `sql:",notnull"`
-	CategoryID      string `sql:"type:uuid,notnull"`
+	Amount          int32   `sql:",notnull"`
+	Title           string  `sql:",notnull"`
+	OriginalTitle   string  `sql:",notnull"`
+	Description     string  `sql:",notnull"`
+	CategoryID      *string `sql:"type:uuid"`
 	Category        *Category
 	Date            time.Time `sql:",notnull"`
 	TransactionType string    `sql:",notnull"`

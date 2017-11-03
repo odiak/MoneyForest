@@ -42,6 +42,7 @@ func main() {
 	app.MountUserController(service, controllers.NewUserController(service, db))
 	app.MountAccountController(service, controllers.NewAccountController(service, db))
 	app.MountCategoryController(service, controllers.NewCategoryController(service, db))
+	app.MountTransactionController(service, controllers.NewTransactionController(service, db))
 
 	// Start service
 	if err := service.ListenAndServe(fmt.Sprintf(":%d", config.Port)); err != nil {
