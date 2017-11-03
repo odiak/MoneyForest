@@ -179,3 +179,71 @@ var _ = Resource("category", func() {
 		Response(NotFound)
 	})
 })
+
+var _ = Resource("transaction", func() {
+	DefaultMedia(TransactionMedia)
+	BasePath("/transactions")
+
+	Action("list", func() {
+		Routing(
+			GET(""),
+		)
+		Params(func() {
+			Param("count", Integer, func() {
+				Minimum(1)
+				Maximum(100)
+				Default(40)
+			})
+			Param("page", Integer, func() {
+				Minimum(1)
+				Default(1)
+			})
+			Param("accountID", UUID)
+		})
+		Response(OK, TransactionListMedia)
+	})
+
+	Action("show", func() {
+		Routing(
+			GET("/:transactionID"),
+		)
+		Params(func() {
+			Param("transactionID", UUID)
+		})
+		Response(OK)
+		Response(NotFound)
+	})
+
+	Action("create", func() {
+		Routing(
+			POST(""),
+		)
+		Payload(TransactionPayload)
+		Response("OK", TransactionMedia)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("update", func() {
+		Routing(
+			PUT(":transactionID"),
+		)
+		Params(func() {
+			Param("transactionID", UUID)
+		})
+		Payload(TransactionPayload)
+		Response("OK", TransactionMedia)
+		Response(NotFound)
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("delete", func() {
+		Routing(
+			DELETE(":transactionID"),
+		)
+		Params(func() {
+			Param("transactionID", UUID)
+		})
+		Response(NoContent)
+		Response(NotFound)
+	})
+})

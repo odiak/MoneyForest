@@ -74,11 +74,12 @@ var TransactionMedia = MediaType("application/vnd.moneyforest.transaction+json",
 		Attribute("title")
 		Attribute("originalTitle")
 		Attribute("description")
-		Attribute("category", CategoryMedia)
+		Attribute("category", CategoryMedia, func() {
+			View("withParent")
+		})
 		Attribute("date")
 
-		Required("id", "accountId", "amount", "transactionType", "title", "originalTitle",
-			"description", "date")
+		Required("id", "accountId", "amount", "transactionType", "title", "date")
 	})
 
 	View("default", func() {
@@ -91,6 +92,22 @@ var TransactionMedia = MediaType("application/vnd.moneyforest.transaction+json",
 		Attribute("description")
 		Attribute("category")
 		Attribute("date")
+	})
+})
+
+var TransactionListMedia = MediaType("application/vnd.moneyforest.transaction-list+json", func() {
+	TypeName("TransactionListMedia")
+
+	Attributes(func() {
+		Attribute("transactions", CollectionOf(TransactionMedia))
+		Attribute("hasNext", Boolean)
+
+		Required("transactions", "hasNext")
+	})
+
+	View("default", func() {
+		Attribute("transactions")
+		Attribute("hasNext")
 	})
 })
 
