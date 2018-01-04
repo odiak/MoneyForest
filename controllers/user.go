@@ -6,6 +6,7 @@ import (
 	"github.com/goadesign/goa"
 	"github.com/odiak/MoneyForest/app"
 	"github.com/odiak/MoneyForest/store"
+	"github.com/odiak/MoneyForest/util"
 )
 
 // UserController implements the user resource.
@@ -20,6 +21,28 @@ func NewUserController(service *goa.Service, db orm.DB) *UserController {
 		CommonController: NewCommonController(service, "UserController"),
 		db:               db,
 	}
+}
+
+func ToUserMedia(user *store.User) *app.UserMedia {
+	return &app.UserMedia{
+		Name:  user.Name,
+		Email: user.Email,
+	}
+}
+
+func CreateToken(db orm.DB, userID string) (string, error) {
+	token, err := util.RandomStr(80)
+	if err != nil {
+		return "", err
+	}
+	ut := &store.UserToken{
+		UserID: userID,
+		Token:  token,
+	}
+	if err := db.Insert(ut); err != nil {
+		return "", err
+	}
+	return token, nil
 }
 
 // Login runs the login action.
@@ -38,14 +61,14 @@ func (c *UserController) Login(ctx *app.LoginUserContext) error {
 		return ctx.Unauthorized()
 	}
 
-	return ctx.OK(ToUserMedia(&user))
-}
-
-func ToUserMedia(user *store.User) *app.UserMedia {
-	return &app.UserMedia{
-		Name:  user.Name,
-		Email: user.Email,
+	um := ToUserMedia(&user)
+	token, err := CreateToken(c.db, user.ID)
+	if err != nil {
+		c.Service.LogError(err.Error())
+		return goa.ErrInternal("unknown error")
 	}
+	um.Token = token
+	return ctx.OK(um)
 }
 
 // Register runs the register action.
@@ -66,5 +89,12 @@ func (c *UserController) Register(ctx *app.RegisterUserContext) error {
 		c.Service.LogError(err.Error())
 		return goa.ErrInternal("unknown error")
 	}
-	return ctx.OK(ToUserMedia(u))
+	um := ToUserMedia(u)
+	token, err := CreateToken(c.db, u.ID)
+	if err != nil {
+		c.Service.LogError(err.Error())
+		return goa.ErrInternal("unknown error")
+	}
+	um.Token = token
+	return ctx.OK(um)
 }
