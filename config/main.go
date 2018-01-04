@@ -3,8 +3,9 @@ package config
 import (
 	"os"
 
-	"github.com/go-pg/pg"
 	"strconv"
+
+	"github.com/go-pg/pg"
 )
 
 var HostName string
@@ -38,7 +39,6 @@ func parseUint(str string, defaultValue uint) uint {
 			panic(err)
 		}
 		return uint(n)
-	} else {
-		return defaultValue
 	}
+	return defaultValue
 }
