@@ -22,7 +22,6 @@ var _ = API("MoneyForest", func() {
 })
 
 var _ = Resource("user", func() {
-	DefaultMedia(UserMedia)
 	BasePath("/users")
 	NoSecurity()
 
@@ -31,7 +30,9 @@ var _ = Resource("user", func() {
 			POST(""),
 		)
 		Payload(UserPayload)
-		Response(OK)
+		Response(OK, func() {
+			Media(UserMedia, "withToken")
+		})
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
 	})
@@ -46,9 +47,22 @@ var _ = Resource("user", func() {
 
 			Required("email", "password")
 		})
-		Response(OK)
+		Response(OK, func() {
+			Media(UserMedia, "withToken")
+		})
 		Response(Unauthorized)
 		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("getMyInfo", func() {
+		Security(APIKeyAuth)
+		Routing(
+			GET("/me"),
+		)
+		Response(OK, func() {
+			Media(UserMedia)
+		})
+		Response(Unauthorized)
 	})
 })
 

@@ -301,11 +301,36 @@ func (mt TransactionMediaCollection) Validate() (err error) {
 type UserMedia struct {
 	Email string `form:"email" json:"email" xml:"email"`
 	Name  string `form:"name" json:"name" xml:"name"`
-	Token string `form:"token" json:"token" xml:"token"`
 }
 
 // Validate validates the UserMedia media type instance.
 func (mt *UserMedia) Validate() (err error) {
+	if mt.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
+	}
+	if mt.Email == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "email"))
+	}
+	if err2 := goa.ValidateFormat(goa.FormatEmail, mt.Email); err2 != nil {
+		err = goa.MergeErrors(err, goa.InvalidFormatError(`response.email`, mt.Email, goa.FormatEmail, err2))
+	}
+	if utf8.RuneCountInString(mt.Name) < 2 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
+	}
+	return
+}
+
+// user information (withToken view)
+//
+// Identifier: application/vnd.moneyforest.user+json; view=withToken
+type UserMediaWithToken struct {
+	Email string `form:"email" json:"email" xml:"email"`
+	Name  string `form:"name" json:"name" xml:"name"`
+	Token string `form:"token" json:"token" xml:"token"`
+}
+
+// Validate validates the UserMediaWithToken media type instance.
+func (mt *UserMediaWithToken) Validate() (err error) {
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}

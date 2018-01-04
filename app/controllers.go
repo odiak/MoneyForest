@@ -431,6 +431,7 @@ func unmarshalUpdateTransactionPayload(ctx context.Context, service *goa.Service
 // UserController is the controller interface for the User actions.
 type UserController interface {
 	goa.Muxer
+	GetMyInfo(*GetMyInfoUserContext) error
 	Login(*LoginUserContext) error
 	Register(*RegisterUserContext) error
 }
@@ -439,6 +440,22 @@ type UserController interface {
 func MountUserController(service *goa.Service, ctrl UserController) {
 	initService(service)
 	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetMyInfoUserContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.GetMyInfo(rctx)
+	}
+	h = handleSecurity("APIKeyAuth", h)
+	service.Mux.Handle("GET", "/api/users/me", ctrl.MuxHandler("getMyInfo", h, nil))
+	service.LogInfo("mount", "ctrl", "User", "action", "GetMyInfo", "route", "GET /api/users/me", "security", "APIKeyAuth")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request

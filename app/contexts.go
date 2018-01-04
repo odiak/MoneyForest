@@ -758,6 +758,47 @@ func (ctx *UpdateTransactionContext) NotFound() error {
 	return nil
 }
 
+// GetMyInfoUserContext provides the user getMyInfo action context.
+type GetMyInfoUserContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewGetMyInfoUserContext parses the incoming request URL and body, performs validations and creates the
+// context used by the user controller getMyInfo action.
+func NewGetMyInfoUserContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetMyInfoUserContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := GetMyInfoUserContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *GetMyInfoUserContext) OK(r *UserMedia) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKWithToken sends a HTTP response with status code 200.
+func (ctx *GetMyInfoUserContext) OKWithToken(r *UserMediaWithToken) error {
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
+	}
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// Unauthorized sends a HTTP response with status code 401.
+func (ctx *GetMyInfoUserContext) Unauthorized() error {
+	ctx.ResponseData.WriteHeader(401)
+	return nil
+}
+
 // LoginUserContext provides the user login action context.
 type LoginUserContext struct {
 	context.Context
@@ -792,11 +833,6 @@ func (payload *loginUserPayload) Validate() (err error) {
 	if payload.Password == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "password"))
 	}
-	if payload.Email != nil {
-		if err2 := goa.ValidateFormat(goa.FormatEmail, *payload.Email); err2 != nil {
-			err = goa.MergeErrors(err, goa.InvalidFormatError(`raw.email`, *payload.Email, goa.FormatEmail, err2))
-		}
-	}
 	return
 }
 
@@ -826,14 +862,11 @@ func (payload *LoginUserPayload) Validate() (err error) {
 	if payload.Password == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "password"))
 	}
-	if err2 := goa.ValidateFormat(goa.FormatEmail, payload.Email); err2 != nil {
-		err = goa.MergeErrors(err, goa.InvalidFormatError(`raw.email`, payload.Email, goa.FormatEmail, err2))
-	}
 	return
 }
 
-// OK sends a HTTP response with status code 200.
-func (ctx *LoginUserContext) OK(r *UserMedia) error {
+// OKWithToken sends a HTTP response with status code 200.
+func (ctx *LoginUserContext) OKWithToken(r *UserMediaWithToken) error {
 	if ctx.ResponseData.Header().Get("Content-Type") == "" {
 		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
 	}
@@ -874,8 +907,8 @@ func NewRegisterUserContext(ctx context.Context, r *http.Request, service *goa.S
 	return &rctx, err
 }
 
-// OK sends a HTTP response with status code 200.
-func (ctx *RegisterUserContext) OK(r *UserMedia) error {
+// OKWithToken sends a HTTP response with status code 200.
+func (ctx *RegisterUserContext) OKWithToken(r *UserMediaWithToken) error {
 	if ctx.ResponseData.Header().Get("Content-Type") == "" {
 		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
 	}

@@ -20,6 +20,11 @@ var UserMedia = MediaType("application/vnd.moneyforest.user+json", func() {
 	View("default", func() {
 		Attribute("name")
 		Attribute("email")
+	})
+
+	View("withToken", func() {
+		Attribute("name")
+		Attribute("email")
 		Attribute("token")
 	})
 })
