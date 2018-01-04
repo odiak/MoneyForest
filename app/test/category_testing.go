@@ -74,7 +74,11 @@ func CreateCategoryBadRequest(t goatest.TInterface, ctx context.Context, service
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	createCtx.Payload = payload
 
@@ -90,9 +94,9 @@ func CreateCategoryBadRequest(t goatest.TInterface, ctx context.Context, service
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -150,7 +154,12 @@ func CreateCategoryOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	createCtx.Payload = payload
 
@@ -166,9 +175,9 @@ func CreateCategoryOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	}
 	var mt *app.CategoryMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.CategoryMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.CategoryMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryMedia", resp, resp)
 		}
 		__err = mt.Validate()
@@ -230,7 +239,12 @@ func CreateCategoryOKWithChildren(t goatest.TInterface, ctx context.Context, ser
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	createCtx.Payload = payload
 
@@ -246,9 +260,9 @@ func CreateCategoryOKWithChildren(t goatest.TInterface, ctx context.Context, ser
 	}
 	var mt *app.CategoryMediaWithChildren
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.CategoryMediaWithChildren)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.CategoryMediaWithChildren)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryMediaWithChildren", resp, resp)
 		}
 		__err = mt.Validate()
@@ -310,7 +324,12 @@ func CreateCategoryOKWithParent(t goatest.TInterface, ctx context.Context, servi
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	createCtx.Payload = payload
 
@@ -326,9 +345,9 @@ func CreateCategoryOKWithParent(t goatest.TInterface, ctx context.Context, servi
 	}
 	var mt *app.CategoryMediaWithParent
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.CategoryMediaWithParent)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.CategoryMediaWithParent)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryMediaWithParent", resp, resp)
 		}
 		__err = mt.Validate()
@@ -380,7 +399,12 @@ func DeleteCategoryNoContent(t goatest.TInterface, ctx context.Context, service 
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	deleteCtx, _err := app.NewDeleteCategoryContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -437,7 +461,12 @@ func DeleteCategoryNotFound(t goatest.TInterface, ctx context.Context, service *
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	deleteCtx, _err := app.NewDeleteCategoryContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -511,7 +540,12 @@ func ListCategoryOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	listCtx, _err := app.NewListCategoryContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil, nil
 	}
 
 	// Perform action
@@ -526,9 +560,9 @@ func ListCategoryOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	}
 	var mt *app.CategoryListMedia
 	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.CategoryListMedia)
-		if !ok {
+		var _ok bool
+		mt, _ok = resp.(*app.CategoryListMedia)
+		if !_ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryListMedia", resp, resp)
 		}
 		_err = mt.Validate()
@@ -590,7 +624,11 @@ func UpdateCategoryBadRequest(t goatest.TInterface, ctx context.Context, service
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	updateCtx.Payload = payload
 
@@ -606,9 +644,9 @@ func UpdateCategoryBadRequest(t goatest.TInterface, ctx context.Context, service
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -667,7 +705,12 @@ func UpdateCategoryNotFound(t goatest.TInterface, ctx context.Context, service *
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil
 	}
 	updateCtx.Payload = payload
 
@@ -736,7 +779,12 @@ func UpdateCategoryOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	updateCtx.Payload = payload
 
@@ -752,9 +800,9 @@ func UpdateCategoryOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	}
 	var mt *app.CategoryMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.CategoryMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.CategoryMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryMedia", resp, resp)
 		}
 		__err = mt.Validate()
@@ -817,7 +865,12 @@ func UpdateCategoryOKWithChildren(t goatest.TInterface, ctx context.Context, ser
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	updateCtx.Payload = payload
 
@@ -833,9 +886,9 @@ func UpdateCategoryOKWithChildren(t goatest.TInterface, ctx context.Context, ser
 	}
 	var mt *app.CategoryMediaWithChildren
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.CategoryMediaWithChildren)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.CategoryMediaWithChildren)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryMediaWithChildren", resp, resp)
 		}
 		__err = mt.Validate()
@@ -898,7 +951,12 @@ func UpdateCategoryOKWithParent(t goatest.TInterface, ctx context.Context, servi
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "CategoryTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateCategoryContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	updateCtx.Payload = payload
 
@@ -914,9 +972,9 @@ func UpdateCategoryOKWithParent(t goatest.TInterface, ctx context.Context, servi
 	}
 	var mt *app.CategoryMediaWithParent
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.CategoryMediaWithParent)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.CategoryMediaWithParent)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.CategoryMediaWithParent", resp, resp)
 		}
 		__err = mt.Validate()

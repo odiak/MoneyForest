@@ -301,6 +301,7 @@ func (mt TransactionMediaCollection) Validate() (err error) {
 type UserMedia struct {
 	Email string `form:"email" json:"email" xml:"email"`
 	Name  string `form:"name" json:"name" xml:"name"`
+	Token string `form:"token" json:"token" xml:"token"`
 }
 
 // Validate validates the UserMedia media type instance.
@@ -310,6 +311,9 @@ func (mt *UserMedia) Validate() (err error) {
 	}
 	if mt.Email == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "email"))
+	}
+	if mt.Token == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "token"))
 	}
 	if err2 := goa.ValidateFormat(goa.FormatEmail, mt.Email); err2 != nil {
 		err = goa.MergeErrors(err, goa.InvalidFormatError(`response.email`, mt.Email, goa.FormatEmail, err2))

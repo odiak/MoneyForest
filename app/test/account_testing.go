@@ -75,7 +75,12 @@ func CreateAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Ser
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateAccountContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	createCtx.Payload = payload
 
@@ -91,9 +96,9 @@ func CreateAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Ser
 	}
 	var mt *app.AccountMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.AccountMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.AccountMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.AccountMedia", resp, resp)
 		}
 		__err = mt.Validate()
@@ -145,7 +150,12 @@ func DeleteAccountNoContent(t goatest.TInterface, ctx context.Context, service *
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	deleteCtx, _err := app.NewDeleteAccountContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -202,7 +212,12 @@ func DeleteAccountNotFound(t goatest.TInterface, ctx context.Context, service *g
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	deleteCtx, _err := app.NewDeleteAccountContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -276,7 +291,11 @@ func ListAccountBadRequest(t goatest.TInterface, ctx context.Context, service *g
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	listCtx, _err := app.NewListAccountContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		return nil, e
 	}
 
 	// Perform action
@@ -291,9 +310,9 @@ func ListAccountBadRequest(t goatest.TInterface, ctx context.Context, service *g
 	}
 	var mt error
 	if resp != nil {
-		var ok bool
-		mt, ok = resp.(error)
-		if !ok {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -358,7 +377,12 @@ func ListAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	listCtx, _err := app.NewListAccountContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil, nil
 	}
 
 	// Perform action
@@ -373,9 +397,9 @@ func ListAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 	}
 	var mt *app.AccountListMedia
 	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.AccountListMedia)
-		if !ok {
+		var _ok bool
+		mt, _ok = resp.(*app.AccountListMedia)
+		if !_ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.AccountListMedia", resp, resp)
 		}
 		_err = mt.Validate()
@@ -427,7 +451,12 @@ func ShowAccountNotFound(t goatest.TInterface, ctx context.Context, service *goa
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	showCtx, _err := app.NewShowAccountContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -484,7 +513,12 @@ func ShowAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	showCtx, _err := app.NewShowAccountContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil, nil
 	}
 
 	// Perform action
@@ -499,9 +533,9 @@ func ShowAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 	}
 	var mt *app.AccountMedia
 	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.AccountMedia)
-		if !ok {
+		var _ok bool
+		mt, _ok = resp.(*app.AccountMedia)
+		if !_ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.AccountMedia", resp, resp)
 		}
 		_err = mt.Validate()
@@ -563,7 +597,11 @@ func UpdateAccountBadRequest(t goatest.TInterface, ctx context.Context, service 
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateAccountContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	updateCtx.Payload = payload
 
@@ -579,9 +617,9 @@ func UpdateAccountBadRequest(t goatest.TInterface, ctx context.Context, service 
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -640,7 +678,12 @@ func UpdateAccountNotFound(t goatest.TInterface, ctx context.Context, service *g
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateAccountContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil
 	}
 	updateCtx.Payload = payload
 
@@ -709,7 +752,12 @@ func UpdateAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Ser
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "AccountTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateAccountContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	updateCtx.Payload = payload
 
@@ -725,9 +773,9 @@ func UpdateAccountOK(t goatest.TInterface, ctx context.Context, service *goa.Ser
 	}
 	var mt *app.AccountMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.AccountMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.AccountMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.AccountMedia", resp, resp)
 		}
 		__err = mt.Validate()

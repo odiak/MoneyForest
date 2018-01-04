@@ -41,7 +41,9 @@ func NewCreateAccountContext(ctx context.Context, r *http.Request, service *goa.
 
 // OK sends a HTTP response with status code 200.
 func (ctx *CreateAccountContext) OK(r *AccountMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -140,13 +142,17 @@ func NewListAccountContext(ctx context.Context, r *http.Request, service *goa.Se
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ListAccountContext) OK(r *AccountListMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account-list+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account-list+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *ListAccountContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -181,7 +187,9 @@ func NewShowAccountContext(ctx context.Context, r *http.Request, service *goa.Se
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowAccountContext) OK(r *AccountMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -223,13 +231,17 @@ func NewUpdateAccountContext(ctx context.Context, r *http.Request, service *goa.
 
 // OK sends a HTTP response with status code 200.
 func (ctx *UpdateAccountContext) OK(r *AccountMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.account+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *UpdateAccountContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -261,25 +273,33 @@ func NewCreateCategoryContext(ctx context.Context, r *http.Request, service *goa
 
 // OK sends a HTTP response with status code 200.
 func (ctx *CreateCategoryContext) OK(r *CategoryMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // OKWithChildren sends a HTTP response with status code 200.
 func (ctx *CreateCategoryContext) OKWithChildren(r *CategoryMediaWithChildren) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // OKWithParent sends a HTTP response with status code 200.
 func (ctx *CreateCategoryContext) OKWithParent(r *CategoryMediaWithParent) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *CreateCategoryContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -378,7 +398,9 @@ func NewListCategoryContext(ctx context.Context, r *http.Request, service *goa.S
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ListCategoryContext) OK(r *CategoryListMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category-list+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category-list+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -457,25 +479,33 @@ func (payload *UpdateCategoryPayload) Validate() (err error) {
 
 // OK sends a HTTP response with status code 200.
 func (ctx *UpdateCategoryContext) OK(r *CategoryMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // OKWithChildren sends a HTTP response with status code 200.
 func (ctx *UpdateCategoryContext) OKWithChildren(r *CategoryMediaWithChildren) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // OKWithParent sends a HTTP response with status code 200.
 func (ctx *UpdateCategoryContext) OKWithParent(r *CategoryMediaWithParent) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.category+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *UpdateCategoryContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -507,13 +537,17 @@ func NewCreateTransactionContext(ctx context.Context, r *http.Request, service *
 
 // OK sends a HTTP response with status code 200.
 func (ctx *CreateTransactionContext) OK(r *TransactionMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *CreateTransactionContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -623,7 +657,9 @@ func NewListTransactionContext(ctx context.Context, r *http.Request, service *go
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ListTransactionContext) OK(r *TransactionListMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction-list+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction-list+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -658,7 +694,9 @@ func NewShowTransactionContext(ctx context.Context, r *http.Request, service *go
 
 // OK sends a HTTP response with status code 200.
 func (ctx *ShowTransactionContext) OK(r *TransactionMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -700,13 +738,17 @@ func NewUpdateTransactionContext(ctx context.Context, r *http.Request, service *
 
 // OK sends a HTTP response with status code 200.
 func (ctx *UpdateTransactionContext) OK(r *TransactionMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.transaction+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *UpdateTransactionContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -792,13 +834,17 @@ func (payload *LoginUserPayload) Validate() (err error) {
 
 // OK sends a HTTP response with status code 200.
 func (ctx *LoginUserContext) OK(r *UserMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *LoginUserContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
@@ -830,13 +876,17 @@ func NewRegisterUserContext(ctx context.Context, r *http.Request, service *goa.S
 
 // OK sends a HTTP response with status code 200.
 func (ctx *RegisterUserContext) OK(r *UserMedia) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.moneyforest.user+json")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
 func (ctx *RegisterUserContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	if ctx.ResponseData.Header().Get("Content-Type") == "" {
+		ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 

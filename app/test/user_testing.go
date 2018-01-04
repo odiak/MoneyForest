@@ -72,7 +72,11 @@ func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "UserTest"), rw, req, prms)
 	loginCtx, __err := app.NewLoginUserContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	loginCtx.Payload = payload
 
@@ -88,9 +92,9 @@ func LoginUserBadRequest(t goatest.TInterface, ctx context.Context, service *goa
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -148,7 +152,12 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "UserTest"), rw, req, prms)
 	loginCtx, __err := app.NewLoginUserContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	loginCtx.Payload = payload
 
@@ -164,9 +173,9 @@ func LoginUserOK(t goatest.TInterface, ctx context.Context, service *goa.Service
 	}
 	var mt *app.UserMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.UserMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.UserMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.UserMedia", resp, resp)
 		}
 		__err = mt.Validate()
@@ -228,7 +237,12 @@ func LoginUserUnauthorized(t goatest.TInterface, ctx context.Context, service *g
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "UserTest"), rw, req, prms)
 	loginCtx, __err := app.NewLoginUserContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil
 	}
 	loginCtx.Payload = payload
 
@@ -295,7 +309,11 @@ func RegisterUserBadRequest(t goatest.TInterface, ctx context.Context, service *
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "UserTest"), rw, req, prms)
 	registerCtx, __err := app.NewRegisterUserContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	registerCtx.Payload = payload
 
@@ -311,9 +329,9 @@ func RegisterUserBadRequest(t goatest.TInterface, ctx context.Context, service *
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -371,7 +389,12 @@ func RegisterUserNotFound(t goatest.TInterface, ctx context.Context, service *go
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "UserTest"), rw, req, prms)
 	registerCtx, __err := app.NewRegisterUserContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil
 	}
 	registerCtx.Payload = payload
 
@@ -439,7 +462,12 @@ func RegisterUserOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "UserTest"), rw, req, prms)
 	registerCtx, __err := app.NewRegisterUserContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	registerCtx.Payload = payload
 
@@ -455,9 +483,9 @@ func RegisterUserOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	}
 	var mt *app.UserMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.UserMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.UserMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.UserMedia", resp, resp)
 		}
 		__err = mt.Validate()

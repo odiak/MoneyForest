@@ -74,7 +74,11 @@ func CreateTransactionBadRequest(t goatest.TInterface, ctx context.Context, serv
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateTransactionContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	createCtx.Payload = payload
 
@@ -90,9 +94,9 @@ func CreateTransactionBadRequest(t goatest.TInterface, ctx context.Context, serv
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -150,7 +154,12 @@ func CreateTransactionOK(t goatest.TInterface, ctx context.Context, service *goa
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	createCtx, __err := app.NewCreateTransactionContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	createCtx.Payload = payload
 
@@ -166,9 +175,9 @@ func CreateTransactionOK(t goatest.TInterface, ctx context.Context, service *goa
 	}
 	var mt *app.TransactionMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.TransactionMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.TransactionMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.TransactionMedia", resp, resp)
 		}
 		__err = mt.Validate()
@@ -220,7 +229,12 @@ func DeleteTransactionNoContent(t goatest.TInterface, ctx context.Context, servi
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	deleteCtx, _err := app.NewDeleteTransactionContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -277,7 +291,12 @@ func DeleteTransactionNotFound(t goatest.TInterface, ctx context.Context, servic
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	deleteCtx, _err := app.NewDeleteTransactionContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -359,7 +378,12 @@ func ListTransactionOK(t goatest.TInterface, ctx context.Context, service *goa.S
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	listCtx, _err := app.NewListTransactionContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil, nil
 	}
 
 	// Perform action
@@ -374,9 +398,9 @@ func ListTransactionOK(t goatest.TInterface, ctx context.Context, service *goa.S
 	}
 	var mt *app.TransactionListMedia
 	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.TransactionListMedia)
-		if !ok {
+		var _ok bool
+		mt, _ok = resp.(*app.TransactionListMedia)
+		if !_ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.TransactionListMedia", resp, resp)
 		}
 		_err = mt.Validate()
@@ -428,7 +452,12 @@ func ShowTransactionNotFound(t goatest.TInterface, ctx context.Context, service 
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	showCtx, _err := app.NewShowTransactionContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil
 	}
 
 	// Perform action
@@ -485,7 +514,12 @@ func ShowTransactionOK(t goatest.TInterface, ctx context.Context, service *goa.S
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	showCtx, _err := app.NewShowTransactionContext(goaCtx, req, service)
 	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
+		e, ok := _err.(goa.ServiceError)
+		if !ok {
+			panic("invalid test data " + _err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", e)
+		return nil, nil
 	}
 
 	// Perform action
@@ -500,9 +534,9 @@ func ShowTransactionOK(t goatest.TInterface, ctx context.Context, service *goa.S
 	}
 	var mt *app.TransactionMedia
 	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.TransactionMedia)
-		if !ok {
+		var _ok bool
+		mt, _ok = resp.(*app.TransactionMedia)
+		if !_ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.TransactionMedia", resp, resp)
 		}
 		_err = mt.Validate()
@@ -564,7 +598,11 @@ func UpdateTransactionBadRequest(t goatest.TInterface, ctx context.Context, serv
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateTransactionContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		return nil, _e
 	}
 	updateCtx.Payload = payload
 
@@ -580,9 +618,9 @@ func UpdateTransactionBadRequest(t goatest.TInterface, ctx context.Context, serv
 	}
 	var mt error
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(error)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(error)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
 		}
 	}
@@ -641,7 +679,12 @@ func UpdateTransactionNotFound(t goatest.TInterface, ctx context.Context, servic
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateTransactionContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil
 	}
 	updateCtx.Payload = payload
 
@@ -710,7 +753,12 @@ func UpdateTransactionOK(t goatest.TInterface, ctx context.Context, service *goa
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "TransactionTest"), rw, req, prms)
 	updateCtx, __err := app.NewUpdateTransactionContext(goaCtx, req, service)
 	if __err != nil {
-		panic("invalid test data " + __err.Error()) // bug
+		_e, _ok := __err.(goa.ServiceError)
+		if !_ok {
+			panic("invalid test data " + __err.Error()) // bug
+		}
+		t.Errorf("unexpected parameter validation error: %+v", _e)
+		return nil, nil
 	}
 	updateCtx.Payload = payload
 
@@ -726,9 +774,9 @@ func UpdateTransactionOK(t goatest.TInterface, ctx context.Context, service *goa
 	}
 	var mt *app.TransactionMedia
 	if resp != nil {
-		var _ok bool
-		mt, _ok = resp.(*app.TransactionMedia)
-		if !_ok {
+		var __ok bool
+		mt, __ok = resp.(*app.TransactionMedia)
+		if !__ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.TransactionMedia", resp, resp)
 		}
 		__err = mt.Validate()
