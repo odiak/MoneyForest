@@ -10,6 +10,7 @@ import (
 	"github.com/odiak/MoneyForest/app"
 	"github.com/odiak/MoneyForest/app/test"
 	"github.com/odiak/MoneyForest/config"
+	"github.com/odiak/MoneyForest/constants"
 	"github.com/odiak/MoneyForest/store"
 )
 
@@ -31,7 +32,7 @@ func TestRegister(t *testing.T) {
 				Name:     "JJJ XXX",
 				Password: "1234abcd",
 			}
-			_, userMedia := test.RegisterUserOK(t, ctx, service, ctrl, payload)
+			_, userMedia := test.RegisterUserOKWithToken(t, ctx, service, ctrl, payload)
 
 			if userMedia.Email != "foo@example.com" {
 				t.Error("wrong email")
@@ -97,7 +98,7 @@ func TestLogin(t *testing.T) {
 				Email:    "user1@example.com",
 				Password: "abcd1234",
 			}
-			_, userMedia := test.LoginUserOK(t, ctx, service, ctrl, payload)
+			_, userMedia := test.LoginUserOKWithToken(t, ctx, service, ctrl, payload)
 			if userMedia.Email != "user1@example.com" {
 				t.Error("wrong email")
 			}
@@ -137,6 +138,41 @@ func TestLogin(t *testing.T) {
 				Password: "abcd1234",
 			}
 			test.LoginUserUnauthorized(t, ctx, service, ctrl, payload)
+		})
+	})
+}
+
+func TestGetMyInfo(t *testing.T) {
+	var (
+		service = goa.New("MoneyForest-test")
+		db      = pg.Connect(config.PgOptions)
+	)
+
+	runInTx(t, db, func(db orm.DB) {
+		var (
+			ctrl = NewUserController(service, db)
+			ctx  = context.Background()
+		)
+
+		t.Run("successful", func(t *testing.T) {
+			user := store.User{
+				Email: "user1@example.com",
+				Name:  "XXXX YYYY",
+			}
+			(&user).SetPassword("abcd1234")
+			err := db.Insert(&user)
+			if err != nil {
+				t.Error(err)
+			}
+			ctx = context.WithValue(ctx, constants.CurrentUserKey, &user)
+
+			_, userMedia := test.GetMyInfoUserOK(t, ctx, service, ctrl)
+			if userMedia.Name != "XXXX YYYY" {
+				t.Error("wrong name")
+			}
+			if userMedia.Email != "user1@example.com" {
+				t.Error("wrong email")
+			}
 		})
 	})
 }

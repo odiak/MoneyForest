@@ -30,6 +30,13 @@ func ToUserMedia(user *store.User) *app.UserMedia {
 	}
 }
 
+func ToUserMediaWithToken(user *store.User) *app.UserMediaWithToken {
+	return &app.UserMediaWithToken{
+		Name:  user.Name,
+		Email: user.Email,
+	}
+}
+
 func CreateToken(db orm.DB, userID string) (string, error) {
 	token, err := util.RandomStr(80)
 	if err != nil {
@@ -61,14 +68,14 @@ func (c *UserController) Login(ctx *app.LoginUserContext) error {
 		return ctx.Unauthorized()
 	}
 
-	um := ToUserMedia(&user)
+	um := ToUserMediaWithToken(&user)
 	token, err := CreateToken(c.db, user.ID)
 	if err != nil {
 		c.Service.LogError(err.Error())
 		return goa.ErrInternal("unknown error")
 	}
 	um.Token = token
-	return ctx.OK(um)
+	return ctx.OKWithToken(um)
 }
 
 // Register runs the register action.
@@ -89,12 +96,18 @@ func (c *UserController) Register(ctx *app.RegisterUserContext) error {
 		c.Service.LogError(err.Error())
 		return goa.ErrInternal("unknown error")
 	}
-	um := ToUserMedia(u)
+	um := ToUserMediaWithToken(u)
 	token, err := CreateToken(c.db, u.ID)
 	if err != nil {
 		c.Service.LogError(err.Error())
 		return goa.ErrInternal("unknown error")
 	}
 	um.Token = token
-	return ctx.OK(um)
+	return ctx.OKWithToken(um)
+}
+
+func (c *UserController) GetMyInfo(ctx *app.GetMyInfoUserContext) error {
+	currentUser := GetCurrentUser(ctx)
+
+	return ctx.OK(ToUserMedia(currentUser))
 }
