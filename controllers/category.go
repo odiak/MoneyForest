@@ -52,6 +52,10 @@ func ToCategoryMedia(category *store.Category) *app.CategoryMedia {
 }
 
 func ToCategoryMediaWithChildren(category *store.Category) *app.CategoryMediaWithChildren {
+	if category == nil {
+		return nil
+	}
+
 	ID, _ := uuid.FromString(category.ID)
 	var parentID *uuid.UUID
 	if category.ParentCategoryID != nil {
@@ -71,6 +75,10 @@ func ToCategoryMediaWithChildren(category *store.Category) *app.CategoryMediaWit
 }
 
 func ToCategoryMediaWithParent(category *store.Category) *app.CategoryMediaWithParent {
+	if category == nil {
+		return nil
+	}
+
 	var parent *app.CategoryMediaWithParent
 	if category.ParentCategory != nil {
 		parent = ToCategoryMediaWithParent(category.ParentCategory)

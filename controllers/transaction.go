@@ -55,6 +55,10 @@ func FromTransactionPayload(payload *app.TransactionPayload) *store.Transaction 
 	if err != nil {
 		panic(err)
 	}
+	var categoryID *string
+	if payload.CategoryID != nil {
+		categoryID = util.StringPtr(payload.CategoryID.String())
+	}
 	return &store.Transaction{
 		AccountID:       payload.AccountID.String(),
 		Amount:          int32(payload.Amount),
@@ -62,7 +66,7 @@ func FromTransactionPayload(payload *app.TransactionPayload) *store.Transaction 
 		Title:           payload.Title,
 		OriginalTitle:   payload.OriginalTitle,
 		Description:     payload.Description,
-		CategoryID:      util.StringPtr(payload.CategoryID.String()),
+		CategoryID:      categoryID,
 		Date:            date,
 	}
 }
